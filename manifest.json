@@ -1,0 +1,18 @@
+{
+  "name": "NUURI 3D",
+  "short_name": "NUURI 3D",
+  "description": "منصة المشي والواقع المعزز (AR) - NUURI 3D",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "icons": [
+    {
+      "src": "./logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

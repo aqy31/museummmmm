@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>إيوان بيت التتونجي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Reset & Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #050505;
+      color: #ffffff;
+      touch-action: none;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    /* Strict Black & White Glassmorphism Design System */
+    .glass-panel {
+      background: rgba(12, 12, 12, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      border-radius: 12px;
+    }
+
+    .glass-header {
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .glass-sidebar {
+      background: rgba(15, 15, 15, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+    }
+
+    .glass-hud {
+      background: rgba(10, 10, 10, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+    }
+
+    /* Minimal Loading Screen */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000000;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #loading-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-content {
+      text-align: center;
+      max-width: 320px;
+      width: 85%;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 20px auto;
+    }
+
+    .spinner-ring {
+      width: 100%;
+      height: 100%;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid #ffffff;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .logo-title {
+      font-size: 1.8rem;
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: #ffffff;
+      margin-bottom: 20px;
+    }
+
+    .logo-title span {
+      font-weight: 300;
+      color: #888888;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: #ffffff;
+      transition: width 0.3s ease;
+    }
+
+    
+    .site-info {
+      font-size: 0.9rem;
+      color: #aaaaaa;
+      margin-top: 15px;
+      line-height: 1.5;
+    }
+    
+    .progress-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: #888888;
+    }
+
+    /* Header Navbar */
+    #top-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 56px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .app-brand {
+      display: flex;
+      align-items: center;
+    }
+
+    .brand-name {
+      font-weight: 900;
+      font-size: 1.2rem;
+      letter-spacing: 3px;
+      color: #ffffff;
+    }
+
+    .header-center {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .segmented-control {
+      display: flex;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .segment-btn {
+      background: transparent;
+      border: none;
+      color: #888888;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .segment-btn:hover {
+      color: #ffffff;
+    }
+
+    .segment-btn.active {
+      background: #ffffff;
+      color: #000000;
+      font-weight: 700;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-ar-action {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn-ar-action:hover {
+      background: #ffffff;
+      color: #000000;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Hero "Start Tour" Button */
+    .hero-container {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      pointer-events: auto;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .hero-container.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 20px);
+    }
+
+    .btn-start-tour {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+      color: #000000;
+      border: none;
+      padding: 14px 34px;
+      border-radius: 30px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.25);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-start-tour:hover {
+      transform: scale(1.04);
+      box-shadow: 0 14px 40px rgba(255, 255, 255, 0.4);
+    }
+
+    .icon-play {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Left Sidebar Tools */
+    #left-toolbar {
+      position: absolute;
+      top: 70px;
+      right: 20px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 8px;
+    }
+
+    .tool-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #888888;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tool-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .tool-btn.active {
+      background: #ffffff;
+      color: #000000;
+    }
+
+    /* HUD LTR Coordinates Box */
+    #coordinates-hud {
+      position: absolute;
+      top: 70px;
+      left: 20px;
+      z-index: 100;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      direction: ltr;
+    }
+
+    .hud-item {
+      font-size: 0.85rem;
+      color: #888888;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-item span:first-child {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: #888888;
+    }
+
+    .hud-item span:last-child {
+      font-family: 'JetBrains Mono', monospace;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .hud-divider {
+      color: rgba(255, 255, 255, 0.2);
+      font-size: 0.8rem;
+    }
+
+    /* Touchscreen Walk Controls Overlay */
+    .walk-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 90;
+      pointer-events: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 30px;
+    }
+
+    .walk-overlay.hidden {
+      display: none !important;
+    }
+
+    /* Speed Controls */
+    .speed-control-panel {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: auto;
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+    }
+
+    .speed-btn {
+      background: transparent;
+      border: none;
+      color: #888888;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .speed-btn.active {
+      background: #ffffff;
+      color: #000000;
+      font-weight: 700;
+    }
+
+    /* Clean D-Pad Container at Bottom Left */
+    .dpad-box {
+      pointer-events: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px;
+      gap: 4px;
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+    }
+
+    .dpad-row {
+      display: flex;
+      gap: 4px;
+    }
+
+    .dpad-btn {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+
+    .dpad-btn:active, .dpad-btn.pressed {
+      background: #ffffff;
+      color: #000000;
+      transform: scale(0.94);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      #top-header {
+        padding: 0 12px;
+      }
+      .lighting-control { display: none; }
+      .btn-start-tour {
+        padding: 12px 24px;
+        font-size: 0.95rem;
+      }
+      #coordinates-hud {
+        top: auto;
+        bottom: 110px;
+        left: 12px;
+      }
+      .dpad-box {
+        bottom: 20px;
+        left: 20px;
+      }
+    }
+  </style>
+
+  <!-- Importmap for Three.js Modules -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- 3D Canvas Container -->
+  <div id="canvas-container"></div>
+
+  <!-- Minimalist Loading Screen -->
+  <div id="loading-screen" class="glass-panel">
+    <div class="loader-content">
+      <div class="spinner">
+        <div class="spinner-ring"></div>
+      </div>
+      <h1 class="logo-title">متحف <span>التراث</span></h1>
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar-fill" style="width: 0%;"></div>
+      </div>
+      <div id="progress-text" class="progress-text">0%</div>
+      <p class="site-info">إيوان بيت التتونجي، تحفة العمارة السكنية الموصلية التي تعكس براعة البناء والزخرفة التقليدية.</p>
+    </div>
+  </div>
+
+  <!-- Minimalist Header Bar -->
+  <header id="top-header" class="glass-header">
+    
+    <div class="header-left">
+      <a href="index.html" class="icon-btn" style="text-decoration:none; margin-left: 10px; width: auto; padding: 0 10px;" title="العودة للمتحف">
+        <span style="font-size:12px; font-weight:bold;">العودة</span>
+      </a>
+      <div class="app-brand">
+
+        <span class="brand-name">المتحف</span>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="segmented-control">
+        <button id="btn-mode-orbit" class="segment-btn active">
+          <span>نظرة عامة (360°)</span>
+        </button>
+        <button id="btn-mode-walk" class="segment-btn">
+          <span>وضع المشي</span>
+        </button>
+      </div>
+
+      <div class="segmented-control lighting-control">
+        <button id="btn-light-day" class="segment-btn active">نهار</button>
+        <button id="btn-light-night" class="segment-btn">ليلي</button>
+        <button id="btn-light-studio" class="segment-btn">استوديو</button>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button id="btn-ar" class="btn-ar-action">
+        <span>واقع معزز (AR)</span>
+      </button>
+
+      <button id="btn-fullscreen" class="icon-btn" title="ملء الشاشة">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Overview Hero Button: "ابدأ التجول" -->
+  <div id="hero-start-container" class="hero-container">
+    <button id="btn-start-tour" class="btn-start-tour">
+      <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      <span>ابدأ التجول بالموقع</span>
+    </button>
+  </div>
+
+  <!-- Left Sidebar Floating Tools -->
+  <aside id="left-toolbar" class="glass-sidebar">
+    <button id="btn-reset-cam" class="tool-btn" title="إعادة ضبط الكاميرا">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+    </button>
+    <button id="btn-lock-height" class="tool-btn active" title="قفل ارتفاع النظر (1.85m)">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M12 2v20"/></svg>
+    </button>
+    <button id="btn-toggle-grid" class="tool-btn" title="إظهار / إخفاء الشبكة">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+    </button>
+  </aside>
+
+  <!-- Clean LTR Coordinate HUD -->
+  <div id="coordinates-hud" class="glass-hud ltr-box">
+    <div class="hud-item"><span>X:</span><span id="coord-x">-17.13</span></div>
+    <div class="hud-divider">|</div>
+    <div class="hud-item"><span>Y:</span><span id="coord-y">1.85</span></div>
+    <div class="hud-divider">|</div>
+    <div class="hud-item"><span>Z:</span><span id="coord-z">-1.31</span></div>
+  </div>
+
+  <!-- Touchscreen Walk Controls Overlay -->
+  <div id="walk-controls-overlay" class="walk-overlay hidden">
+    <!-- Virtual Joystick Container -->
+    <div id="joystick-zone" style="position: absolute; bottom: 30px; left: 30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); pointer-events: auto; touch-action: none; display: flex; align-items: center; justify-content: center;">
+      <div id="joystick-knob" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.7); position: absolute; pointer-events: none; transition: transform 0.1s;"></div>
+      <div style="position: absolute; top: -30px; color: #fff; font-size: 10px; opacity: 0.7; pointer-events:none; width: 200px; text-align: center;">انقر مرتين للقفز</div>
+    </div>
+    
+    <!-- Speed Controls -->
+    <div class="speed-control-panel glass-panel">
+      <button id="btn-speed-slow" class="speed-btn">بطيء</button>
+      <button id="btn-speed-normal" class="speed-btn active">عادي</button>
+      <button id="btn-speed-fast" class="speed-btn">سريع</button>
+    </div>
+  </div>
+
+  <!-- Consolidated JavaScript Code -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+    import { DeviceOrientationControls } from './DeviceOrientationControls.js';
+    import { ARButton } from 'three/addons/webxr/ARButton.js';
+
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+    import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+    
+
+    // === 1. SCENE MANAGER ===
+    class SceneManager {
+      constructor(container) {
+        this.container = container;
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color('#050505');
+        this.scene.fog = new THREE.FogExp2('#050505', 0.003);
+
+        this.camera = new THREE.PerspectiveCamera(
+          55,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          1000
+        );
+        this.camera.position.set(0, 25, 50);
+
+        this.renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: true,
+          powerPreference: 'high-performance',
+          preserveDrawingBuffer: true
+        });
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+        if (this.composer) {
+            this.composer.setSize(window.innerWidth, window.innerHeight);
+        }
+    
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMappingExposure = 1.0;
+        this.renderer.xr.enabled = true;
+
+        this.container.appendChild(this.renderer.domElement);
+
+        this.composer = new EffectComposer(this.renderer);
+        const renderPass = new RenderPass(this.scene, this.camera);
+        this.composer.addPass(renderPass);
+        
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.35, 0.5, 0.85);
+        this.composer.addPass(bloomPass);
+
+        const outputPass = new OutputPass();
+        this.composer.addPass(outputPass);
+    
+        this.setupLighting();
+
+        this.gridHelper = new THREE.GridHelper(120, 60, '#ffffff', '#222222');
+        this.gridHelper.position.y = -0.01;
+        this.gridHelper.visible = false;
+        this.scene.add(this.gridHelper);
+
+        this.model = null;
+        this.modelBox = null;
+        this.modelCenter = new THREE.Vector3();
+        this.modelSize = new THREE.Vector3();
+
+        window.addEventListener('resize', this.onWindowResize.bind(this));
+      }
+
+      setupLighting() {
+        // High-End Graphic Lighting Setup
+        // Hemisphere light (sky/ground)
+        this.hemiLight = new THREE.HemisphereLight('#e0e0e0', '#222222', 1.0);
+        this.scene.add(this.hemiLight);
+
+        // Main Sun Light (Warm and Bright)
+        this.dirLight = new THREE.DirectionalLight('#fffaeb', 3.5);
+        this.dirLight.position.set(35, 65, 35);
+        this.dirLight.castShadow = true;
+        this.dirLight.shadow.mapSize.width = 4096;
+        this.dirLight.shadow.mapSize.height = 4096;
+        this.dirLight.shadow.camera.near = 0.5;
+        this.dirLight.shadow.camera.far = 160;
+        this.dirLight.shadow.bias = -0.0001;
+        this.dirLight.shadow.normalBias = 0.02;
+        this.dirLight.shadow.radius = 2.5; // Soft Shadows
+
+        const d = 45;
+        this.dirLight.shadow.camera.left = -d;
+        this.dirLight.shadow.camera.right = d;
+        this.dirLight.shadow.camera.top = d;
+        this.dirLight.shadow.camera.bottom = -d;
+        this.scene.add(this.dirLight);
+
+        // Fill Light (Cool Sky Blue) to contrast the warm sun
+        this.fillLight = new THREE.DirectionalLight('#aaccff', 1.8);
+        this.fillLight.position.set(-35, 25, -35);
+        this.scene.add(this.fillLight);
+
+        const archAmbient = new THREE.AmbientLight('#ffffff', 0.5);
+        this.scene.add(archAmbient);
+      }
+
+      setLightingPreset(preset) {
+        switch(preset) {
+          case 'day':
+            this.scene.background = new THREE.Color('#050505');
+            this.scene.fog.color = new THREE.Color('#050505');
+            this.hemiLight.color.set('#ffffff');
+            this.hemiLight.groundColor.set('#1f1f1f');
+            this.hemiLight.intensity = 1.6;
+            this.dirLight.color.set('#ffffff');
+            this.dirLight.intensity = 2.4;
+            this.dirLight.position.set(35, 65, 35);
+            break;
+          case 'night':
+            this.scene.background = new THREE.Color('#020202');
+            this.scene.fog.color = new THREE.Color('#020202');
+            this.hemiLight.color.set('#444444');
+            this.hemiLight.groundColor.set('#050505');
+            this.hemiLight.intensity = 0.6;
+            this.dirLight.color.set('#ffffff');
+            this.dirLight.intensity = 1.0;
+            this.dirLight.position.set(10, 45, -20);
+            break;
+          case 'studio':
+            this.scene.background = new THREE.Color('#0d0d0d');
+            this.scene.fog.color = new THREE.Color('#0d0d0d');
+            this.hemiLight.color.set('#ffffff');
+            this.hemiLight.groundColor.set('#222222');
+            this.hemiLight.intensity = 2.0;
+            this.dirLight.color.set('#ffffff');
+            this.dirLight.intensity = 2.0;
+            this.dirLight.position.set(0, 70, 0);
+            break;
+        }
+      }
+
+      loadModel(url, onProgress, onLoad, onError) {
+        const loader = new GLTFLoader();
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+        loader.setDRACOLoader(dracoLoader);
+
+        loader.load(
+          url,
+          (gltf) => {
+            this.model = gltf.scene;
+            this.model.traverse((child) => {
+              if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+                if (child.geometry) {
+                  child.geometry.computeVertexNormals();
+                }
+                if (child.material) {
+                  child.material.flatShading = false;
+                  child.material.roughness = 0.75;
+                  child.material.metalness = 0.02;
+                  child.material.needsUpdate = true;
+                }
+              }
+            });
+
+            this.modelBox = new THREE.Box3().setFromObject(this.model);
+            this.modelBox.getCenter(this.modelCenter);
+            this.modelBox.getSize(this.modelSize);
+
+            this.model.position.x = -this.modelCenter.x;
+            this.model.position.z = -this.modelCenter.z;
+            this.model.position.y = -this.modelBox.min.y;
+
+            this.scene.add(this.model);
+            if (onLoad) onLoad(this.model, this.modelBox, this.modelSize);
+          },
+          (xhr) => {
+            if (xhr.lengthComputable && onProgress) {
+              const percent = Math.round((xhr.loaded / xhr.total) * 100);
+              onProgress(percent);
+            } else if (onProgress) {
+              const estPercent = Math.min(Math.round((xhr.loaded / 24345612) * 100), 99);
+              onProgress(estPercent);
+            }
+          },
+          (err) => {
+            console.error('Error loading GLB model:', err);
+            if (onError) onError(err);
+          }
+        );
+      }
+
+      toggleGrid(visible) {
+        if (visible !== undefined) {
+          this.gridHelper.visible = visible;
+        } else {
+          this.gridHelper.visible = !this.gridHelper.visible;
+        }
+        return this.gridHelper.visible;
+      }
+
+      onWindowResize() {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+        if (this.composer) {
+            this.composer.setSize(window.innerWidth, window.innerHeight);
+        }
+    
+      }
+
+      render() {
+        
+        if (this.dirLight && !window.sunLocked && window.currentMode !== 'walk') {
+            // User controls the sun by rotating the camera!
+            const camAngle = Math.atan2(this.camera.position.z, this.camera.position.x);
+            const sunAngle = camAngle + (Math.PI / 4); // Sun is 45 degrees offset from camera
+            const radius = 70;
+            this.dirLight.position.x = Math.cos(sunAngle) * radius;
+            this.dirLight.position.z = Math.sin(sunAngle) * radius;
+        }
+        this.composer ? this.composer.render() : this.renderer.render(this.scene, this.camera);
+      }
+    }
+
+    // === 2. CONTROL MANAGER ===
+    class ControlManager {
+      constructor(camera, domElement, onCoordUpdate) {
+        this.camera = camera;
+        this.domElement = domElement;
+        this.onCoordUpdate = onCoordUpdate;
+        this.mode = 'orbit';
+
+        this.orbitControls = new OrbitControls(this.camera, this.domElement);
+        this.orbitControls.enableDamping = true;
+        this.orbitControls.dampingFactor = 0.05;
+        this.orbitControls.maxPolarAngle = Math.PI / 2 - 0.02;
+        this.orbitControls.minDistance = 2;
+        this.orbitControls.maxDistance = 150;
+        this.orbitControls.autoRotate = true;
+        this.orbitControls.autoRotateSpeed = 1.2;
+
+        this.eyeHeight = 1.85;
+        this.lockHeight = true;
+        this.speedMultiplier = 3.5;
+
+        this.velocity = new THREE.Vector3();
+        this.moveVector = new THREE.Vector3();
+
+        this.yaw = 0;
+        this.pitch = 0;
+
+        this.isTransitioning = false;
+        this.transitionProgress = 0;
+        this.transitionDuration = 1.8;
+        this.transitionStartPos = new THREE.Vector3();
+        this.transitionEndPos = new THREE.Vector3();
+        this.transitionStartTarget = new THREE.Vector3();
+        this.transitionEndTarget = new THREE.Vector3();
+        this.onTransitionComplete = null;
+
+        this.keys = { forward: false, backward: false, left: false, right: false, sprint: false };
+        this.isTouchLooking = false;
+
+        this.initKeyboardListeners();
+        this.initTouchLookListeners();
+      }
+
+      setMode(mode) {
+        this.mode = mode;
+        if (mode === 'orbit') {
+          this.orbitControls.enabled = true;
+          this.orbitControls.autoRotate = true;
+        } else if (mode === 'walk') {
+          this.orbitControls.enabled = false;
+          this.orbitControls.autoRotate = false;
+          this.camera.position.y = this.eyeHeight;
+          
+          const dir = new THREE.Vector3();
+          this.camera.getWorldDirection(dir);
+          this.yaw = Math.atan2(-dir.x, -dir.z);
+          this.pitch = Math.asin(THREE.MathUtils.clamp(dir.y, -0.99, 0.99));
+        }
+      }
+
+      animateToEntrance(
+        targetPos = new THREE.Vector3(-17.13, 1.85, -1.31),
+        targetLookAt = new THREE.Vector3(-10.0, 1.85, 5.0),
+        onComplete = null
+      ) {
+        this.isTransitioning = true;
+        this.transitionProgress = 0;
+        this.onTransitionComplete = onComplete;
+        this.orbitControls.autoRotate = false;
+
+        this.transitionStartPos.copy(this.camera.position);
+        this.transitionEndPos.copy(targetPos);
+        this.transitionStartTarget.copy(this.orbitControls.target);
+        this.transitionEndTarget.copy(targetLookAt);
+
+        this.orbitControls.enabled = false;
+      }
+
+      setSpeed(speedType) {
+        switch (speedType) {
+          case 'slow': this.speedMultiplier = 1.8; break;
+          case 'normal': this.speedMultiplier = 3.5; break;
+          case 'fast': this.speedMultiplier = 7.0; break;
+        }
+      }
+
+      toggleHeightLock() {
+        this.lockHeight = !this.lockHeight;
+        if (this.lockHeight) {
+          this.camera.position.y = this.eyeHeight;
+        }
+        return this.lockHeight;
+      }
+
+      resetCamera(targetPosition = new THREE.Vector3(0, 25, 50)) {
+        this.camera.position.copy(targetPosition);
+        this.camera.lookAt(0, 2, 0);
+        this.orbitControls.target.set(0, 2, 0);
+        this.yaw = 0;
+        this.pitch = 0;
+        this.velocity.set(0, 0, 0);
+        this.orbitControls.autoRotate = true;
+      }
+
+      initKeyboardListeners() {
+        window.addEventListener('keydown', (e) => {
+          if (this.mode !== 'walk' || this.isTransitioning) return;
+          switch (e.code) {
+            case 'KeyW': case 'ArrowUp': this.keys.forward = true; break;
+            case 'KeyS': case 'ArrowDown': this.keys.backward = true; break;
+            case 'KeyA': case 'ArrowLeft': this.keys.left = true; break;
+            case 'KeyD': case 'ArrowRight': this.keys.right = true; break;
+            case 'ShiftLeft': case 'ShiftRight': this.keys.sprint = true; break;
+          }
+        });
+
+        window.addEventListener('keyup', (e) => {
+          if (this.mode !== 'walk' || this.isTransitioning) return;
+          switch (e.code) {
+            case 'KeyW': case 'ArrowUp': this.keys.forward = false; break;
+            case 'KeyS': case 'ArrowDown': this.keys.backward = false; break;
+            case 'KeyA': case 'ArrowLeft': this.keys.left = false; break;
+            case 'KeyD': case 'ArrowRight': this.keys.right = false; break;
+            case 'ShiftLeft': case 'ShiftRight': this.keys.sprint = false; break;
+          }
+        });
+      }
+
+      initTouchLookListeners() {
+        let lastX = 0, lastY = 0;
+        const onPointerDown = (e) => {
+          if (e.target.closest('button, .glass-panel, .glass-hud, #dpad-container')) return;
+          this.isTouchLooking = true;
+          lastX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+          lastY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+        };
+
+        const onPointerMove = (e) => {
+          if (!this.isTouchLooking || this.isTransitioning) return;
+          const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+          const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+          const deltaX = clientX - lastX;
+          const deltaY = clientY - lastY;
+          lastX = clientX;
+          lastY = clientY;
+
+          const sensitivity = 0.003;
+          this.yaw -= deltaX * sensitivity;
+          this.pitch -= deltaY * sensitivity;
+
+          const maxPitch = Math.PI / 2 - 0.05;
+          this.pitch = THREE.MathUtils.clamp(this.pitch, -maxPitch, maxPitch);
+        };
+
+        const onPointerUp = () => { this.isTouchLooking = false; };
+
+        window.addEventListener('mousedown', onPointerDown);
+        window.addEventListener('mousemove', onPointerMove);
+        window.addEventListener('mouseup', onPointerUp);
+        window.addEventListener('touchstart', onPointerDown, { passive: true });
+        window.addEventListener('touchmove', onPointerMove, { passive: true });
+        window.addEventListener('touchend', onPointerUp, { passive: true });
+      }
+
+      setDpadDirection(dirStr, active) {
+        if (dirStr === 'up') this.keys.forward = active;
+        if (dirStr === 'down') this.keys.backward = active;
+        if (dirStr === 'left') this.keys.left = active;
+        if (dirStr === 'right') this.keys.right = active;
+      }
+
+      update(delta) {
+        if (this.isTransitioning) {
+          this.transitionProgress += delta / this.transitionDuration;
+          if (this.transitionProgress >= 1.0) {
+            this.transitionProgress = 1.0;
+            this.isTransitioning = false;
+            this.camera.position.copy(this.transitionEndPos);
+            this.camera.lookAt(this.transitionEndTarget);
+
+            const dir = new THREE.Vector3().subVectors(this.transitionEndTarget, this.transitionEndPos).normalize();
+            this.yaw = Math.atan2(-dir.x, -dir.z);
+            this.pitch = Math.asin(THREE.MathUtils.clamp(dir.y, -0.99, 0.99));
+
+            if (this.onTransitionComplete) {
+              this.onTransitionComplete();
+              this.onTransitionComplete = null;
+            }
+            return;
+          }
+
+          const t = this.transitionProgress;
+          const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+          this.camera.position.lerpVectors(this.transitionStartPos, this.transitionEndPos, ease);
+          const currentTarget = new THREE.Vector3().lerpVectors(this.transitionStartTarget, this.transitionEndTarget, ease);
+          this.camera.lookAt(currentTarget);
+          return;
+        }
+
+        if (this.mode === 'orbit') {
+          this.orbitControls.update();
+        } else if (this.mode === 'walk') {
+          this.moveVector.set(0, 0, 0);
+          let forwardPower = 0, strafePower = 0;
+          if (this.keys.forward) forwardPower += 1;
+          if (this.keys.backward) forwardPower -= 1;
+          if (this.keys.left) strafePower -= 1;
+          if (this.keys.right) strafePower += 1;
+
+          const sinYaw = Math.sin(this.yaw);
+          const cosYaw = Math.cos(this.yaw);
+          const fwdX = -sinYaw, fwdZ = -cosYaw;
+          const rightX = cosYaw, rightZ = -sinYaw;
+
+          const currentSpeed = (this.keys.sprint ? this.speedMultiplier * 1.6 : this.speedMultiplier);
+          const targetVelX = (fwdX * forwardPower + rightX * strafePower) * currentSpeed;
+          const targetVelZ = (fwdZ * forwardPower + rightZ * strafePower) * currentSpeed;
+
+          this.velocity.x += (targetVelX - this.velocity.x) * Math.min(delta * 10, 1.0);
+          this.velocity.z += (targetVelZ - this.velocity.z) * Math.min(delta * 10, 1.0);
+
+          this.camera.position.x += this.velocity.x * delta;
+          this.camera.position.z += this.velocity.z * delta;
+
+          const maxBound = 45;
+          this.camera.position.x = THREE.MathUtils.clamp(this.camera.position.x, -maxBound, maxBound);
+          this.camera.position.z = THREE.MathUtils.clamp(this.camera.position.z, -maxBound, maxBound);
+
+          if (this.lockHeight) {
+            this.camera.position.y = this.eyeHeight;
+          }
+
+          const qYaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
+          const qPitch = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), this.pitch);
+          this.camera.quaternion.copy(qYaw.multiply(qPitch));
+        }
+
+        if (this.onCoordUpdate) {
+          const pos = this.camera.position;
+          this.onCoordUpdate(pos.x.toFixed(2), pos.y.toFixed(2), pos.z.toFixed(2));
+        }
+      }
+    }
+
+    // === 3. AR/VR MANAGER ===
+    class ARVRManager {
+      constructor(renderer, scene, camera, model) {
+        this.renderer = renderer;
+        this.scene = scene;
+        this.camera = camera;
+        this.model = model;
+        this.arButtonElement = null;
+        this.initWebXR();
+      }
+
+      initWebXR() {
+        if ('xr' in navigator) {
+          navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+            if (supported) {
+              this.arButtonElement = ARButton.createButton(this.renderer, {
+                requiredFeatures: ['hit-test'],
+                optionalFeatures: ['dom-overlay'],
+                domOverlay: { root: document.body }
+              });
+              this.arButtonElement.style.display = 'none';
+              document.body.appendChild(this.arButtonElement);
+            }
+          });
+        }
+      }
+
+      setModel(model) { this.model = model; }
+
+      launchAR() {
+        if (this.arButtonElement) {
+          this.arButtonElement.click();
+        } else {
+          alert('📱 لتشغيل الواقع المعزز (AR) على جهازك:\nيرجى فتح الموقع من متصفح يدعم AR (مثل خوذات VR أو أجهزة أندرويد المتوافقة مع ARCore).');
+        }
+      }
+    }
+
+    // === 4. APP INITIALIZATION ===
+    const container = document.getElementById('canvas-container');
+    const coordX = document.getElementById('coord-x');
+    const coordY = document.getElementById('coord-y');
+    const coordZ = document.getElementById('coord-z');
+
+    const loadingScreen = document.getElementById('loading-screen');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+
+    const heroStartContainer = document.getElementById('hero-start-container');
+    const btnStartTour = document.getElementById('btn-start-tour');
+    const btnOrbit = document.getElementById('btn-mode-orbit');
+    const btnWalk = document.getElementById('btn-mode-walk');
+    const walkOverlay = document.getElementById('walk-controls-overlay');
+
+    const sceneManager = new SceneManager(container);
+    const controlManager = new ControlManager(
+      sceneManager.camera,
+      sceneManager.renderer.domElement,
+      (x, y, z) => {
+        coordX.textContent = x;
+        coordY.textContent = y;
+        coordZ.textContent = z;
+      }
+    );
+
+    const arvrManager = new ARVRManager(sceneManager.renderer, sceneManager.scene, sceneManager.camera, null);
+
+    const entrancePos = new THREE.Vector3(-17.13, 1.85, -1.31);
+    const entranceLookAt = new THREE.Vector3(-10.0, 1.85, 5.0);
+
+    sceneManager.loadModel(
+      './tutunji_house_iwan.glb',
+      (percent) => {
+        progressBar.style.width = `${percent}%`;
+        progressText.textContent = `${percent}%`;
+      },
+      (model, box, size) => {
+        arvrManager.setModel(model);
+        const maxDim = Math.max(size.x, size.y, size.z);
+        sceneManager.camera.position.set(0, maxDim * 0.6, maxDim * 1.3);
+        sceneManager.camera.lookAt(0, box.max.y * 0.4, 0);
+        controlManager.orbitControls.target.set(0, box.max.y * 0.4, 0);
+        controlManager.orbitControls.autoRotate = true;
+
+        setTimeout(() => {
+          loadingScreen.classList.add('fade-out');
+        }, 400);
+      },
+      (err) => {
+        progressText.textContent = 'خطأ في التحميل';
+        console.error(err);
+      }
+    );
+
+    btnStartTour.addEventListener('click', () => {
+      heroStartContainer.classList.add('hidden');
+      window.sunLocked = true;
+      controlManager.animateToEntrance(entrancePos, entranceLookAt, () => {
+        btnWalk.classList.add('active');
+        btnOrbit.classList.remove('active');
+        walkOverlay.classList.remove('hidden');
+        window.currentMode = 'walk'; controlManager.setMode('walk');
+      });
+    });
+
+    btnOrbit.addEventListener('click', () => {
+      window.sunLocked = false;
+      btnOrbit.classList.add('active');
+      btnWalk.classList.remove('active');
+      walkOverlay.classList.add('hidden');
+      heroStartContainer.classList.remove('hidden');
+      window.currentMode = 'orbit'; controlManager.setMode('orbit');
+    });
+
+    btnWalk.addEventListener('click', () => {
+      window.sunLocked = true;
+      btnWalk.classList.add('active');
+      btnOrbit.classList.remove('active');
+      walkOverlay.classList.add('hidden');
+      heroStartContainer.classList.add('hidden');
+      controlManager.animateToEntrance(entrancePos, entranceLookAt, () => {
+        walkOverlay.classList.remove('hidden');
+        window.currentMode = 'walk'; controlManager.setMode('walk');
+      });
+    });
+
+    const lightBtns = {
+      day: document.getElementById('btn-light-day'),
+      night: document.getElementById('btn-light-night'),
+      studio: document.getElementById('btn-light-studio')
+    };
+
+    Object.keys(lightBtns).forEach((preset) => {
+      if (lightBtns[preset]) {
+        lightBtns[preset].addEventListener('click', () => {
+          Object.values(lightBtns).forEach(btn => btn.classList.remove('active'));
+          lightBtns[preset].classList.add('active');
+          sceneManager.setLightingPreset(preset);
+        });
+      }
+    });
+
+    const speedBtns = {
+      slow: document.getElementById('btn-speed-slow'),
+      normal: document.getElementById('btn-speed-normal'),
+      fast: document.getElementById('btn-speed-fast')
+    };
+
+    Object.keys(speedBtns).forEach((speed) => {
+      speedBtns[speed].addEventListener('click', () => {
+        Object.values(speedBtns).forEach(btn => btn.classList.remove('active'));
+        speedBtns[speed].classList.add('active');
+        controlManager.setSpeed(speed);
+      });
+    });
+
+    document.getElementById('btn-reset-cam').addEventListener('click', () => {
+      controlManager.resetCamera();
+      heroStartContainer.classList.remove('hidden');
+      btnOrbit.classList.add('active');
+      btnWalk.classList.remove('active');
+      walkOverlay.classList.add('hidden');
+      window.currentMode = 'orbit'; controlManager.setMode('orbit');
+    });
+
+    const btnLockHeight = document.getElementById('btn-lock-height');
+    btnLockHeight.addEventListener('click', () => {
+      const isLocked = controlManager.toggleHeightLock();
+      btnLockHeight.classList.toggle('active', isLocked);
+    });
+
+    const btnGrid = document.getElementById('btn-toggle-grid');
+    btnGrid.addEventListener('click', () => {
+      const isVisible = sceneManager.toggleGrid();
+      btnGrid.classList.toggle('active', isVisible);
+    });
+
+    document.getElementById('btn-fullscreen').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    document.getElementById('btn-ar').addEventListener('click', () => {
+      arvrManager.launchAR();
+    });
+
+    const dpadDirs = ['up', 'down', 'left', 'right'];
+    dpadDirs.forEach((dir) => {
+      const btn = document.getElementById(`dpad-${dir}`);
+      if (!btn) return;
+      const start = (e) => {
+        e.preventDefault();
+        btn.classList.add('pressed');
+        controlManager.setDpadDirection(dir, true);
+      };
+      const stop = (e) => {
+        e.preventDefault();
+        btn.classList.remove('pressed');
+        controlManager.setDpadDirection(dir, false);
+      };
+      btn.addEventListener('touchstart', start, { passive: false });
+      btn.addEventListener('touchend', stop, { passive: false });
+      btn.addEventListener('mousedown', start);
+      btn.addEventListener('mouseup', stop);
+      btn.addEventListener('mouseleave', stop);
+    });
+
+    const clock = new THREE.Clock();
+    sceneManager.renderer.setAnimationLoop(() => {
+      const delta = clock.getDelta();
+      controlManager.update(delta);
+      sceneManager.render();
+    });
+  </script>
+</body>
+</html>

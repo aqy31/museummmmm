@@ -882,6 +882,21 @@
 
         this.keys = { forward: false, backward: false, left: false, right: false, sprint: false };
         this.isTouchLooking = false;
+        
+        // Jump Physics
+        this.isJumping = false;
+        this.jumpVelocity = 0;
+        this.gravity = 15;
+        this.jumpPower = 6;
+        
+        // Joystick
+        this.lastTap = 0;
+        this.joystickDelta = { x: 0, y: 0 };
+        this.initJoystick();
+        
+        // Gyro
+        this.gyroControls = new DeviceOrientationControls(this.camera);
+        this.gyroControls.enabled = false;
 
         this.initKeyboardListeners();
         this.initTouchLookListeners();
@@ -892,10 +907,21 @@
         if (mode === 'orbit') {
           this.orbitControls.enabled = true;
           this.orbitControls.autoRotate = true;
+          if (this.gyroControls) this.gyroControls.enabled = false;
         } else if (mode === 'walk') {
           this.orbitControls.enabled = false;
           this.orbitControls.autoRotate = false;
           this.camera.position.y = this.eyeHeight;
+          
+          if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission().then(response => {
+              if (response === 'granted') {
+                this.gyroControls.enabled = true;
+              }
+            }).catch(console.error);
+          } else {
+             this.gyroControls.enabled = true;
+          }
           
           const dir = new THREE.Vector3();
           this.camera.getWorldDirection(dir);
@@ -932,9 +958,17 @@
 
       toggleHeightLock() {
         this.lockHeight = !this.lockHeight;
-        if (this.lockHeight) {
-          this.camera.position.y = this.eyeHeight;
-        }
+        if (this.isJumping || !this.lockHeight) {
+            this.camera.position.y += this.jumpVelocity * delta;
+            this.jumpVelocity -= this.gravity * delta;
+            if (this.camera.position.y <= this.eyeHeight && this.lockHeight) {
+                this.camera.position.y = this.eyeHeight;
+                this.isJumping = false;
+                this.jumpVelocity = 0;
+            }
+          } else if (this.lockHeight) {
+            this.camera.position.y = this.eyeHeight;
+          }
         return this.lockHeight;
       }
 
@@ -957,6 +991,7 @@
             case 'KeyA': case 'ArrowLeft': this.keys.left = true; break;
             case 'KeyD': case 'ArrowRight': this.keys.right = true; break;
             case 'ShiftLeft': case 'ShiftRight': this.keys.sprint = true; break;
+            case 'Space': this.jump(); break;
           }
         });
 
@@ -970,6 +1005,76 @@
             case 'ShiftLeft': case 'ShiftRight': this.keys.sprint = false; break;
           }
         });
+      }
+
+      
+      jump() {
+        if (!this.isJumping && this.mode === 'walk') {
+          this.isJumping = true;
+          this.jumpVelocity = this.jumpPower;
+        }
+      }
+
+      initJoystick() {
+        const zone = document.getElementById('joystick-zone');
+        const knob = document.getElementById('joystick-knob');
+        if (!zone || !knob) return;
+
+        let active = false;
+        let centerX, centerY;
+        const maxDist = 35;
+
+        const handleStart = (e) => {
+          e.preventDefault();
+          
+          const now = Date.now();
+          if (now - this.lastTap < 300) {
+              this.jump();
+          }
+          this.lastTap = now;
+
+          active = true;
+          const rect = zone.getBoundingClientRect();
+          centerX = rect.left + rect.width / 2;
+          centerY = rect.top + rect.height / 2;
+          updateJoy(e);
+        };
+
+        const handleMove = (e) => {
+          if (!active) return;
+          e.preventDefault();
+          updateJoy(e);
+        };
+
+        const handleEnd = (e) => {
+          if (!active) return;
+          e.preventDefault();
+          active = false;
+          knob.style.transform = `translate(0px, 0px)`;
+          this.joystickDelta = { x: 0, y: 0 };
+        };
+
+        const updateJoy = (e) => {
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          let dx = clientX - centerX;
+          let dy = clientY - centerY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist > maxDist) {
+            dx = (dx / dist) * maxDist;
+            dy = (dy / dist) * maxDist;
+          }
+          knob.style.transform = `translate(${dx}px, ${dy}px)`;
+          this.joystickDelta.x = dx / maxDist;
+          this.joystickDelta.y = dy / maxDist;
+        };
+
+        zone.addEventListener('touchstart', handleStart, { passive: false });
+        zone.addEventListener('touchmove', handleMove, { passive: false });
+        zone.addEventListener('touchend', handleEnd, { passive: false });
+        zone.addEventListener('mousedown', handleStart);
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', handleEnd);
       }
 
       initTouchLookListeners() {
@@ -998,7 +1103,22 @@
           this.pitch = THREE.MathUtils.clamp(this.pitch, -maxPitch, maxPitch);
         };
 
-        const onPointerUp = () => { this.isTouchLooking = false; };
+        const onPointerUp = () => { this.isTouchLooking = false;
+        
+        // Jump Physics
+        this.isJumping = false;
+        this.jumpVelocity = 0;
+        this.gravity = 15;
+        this.jumpPower = 6;
+        
+        // Joystick
+        this.lastTap = 0;
+        this.joystickDelta = { x: 0, y: 0 };
+        this.initJoystick();
+        
+        // Gyro
+        this.gyroControls = new DeviceOrientationControls(this.camera);
+        this.gyroControls.enabled = false; };
 
         window.addEventListener('mousedown', onPointerDown);
         window.addEventListener('mousemove', onPointerMove);
@@ -1046,6 +1166,9 @@
         if (this.mode === 'orbit') {
           this.orbitControls.update();
         } else if (this.mode === 'walk') {
+          if (this.gyroControls && this.gyroControls.enabled) {
+              this.gyroControls.update();
+          }
           this.moveVector.set(0, 0, 0);
           let forwardPower = 0, strafePower = 0;
           if (this.keys.forward) forwardPower += 1;
@@ -1064,6 +1187,11 @@
 
           this.velocity.x += (targetVelX - this.velocity.x) * Math.min(delta * 10, 1.0);
           this.velocity.z += (targetVelZ - this.velocity.z) * Math.min(delta * 10, 1.0);
+          
+          if (this.joystickDelta.y !== 0 || this.joystickDelta.x !== 0) {
+              this.velocity.z = -this.joystickDelta.y * currentSpeed;
+              this.velocity.x = this.joystickDelta.x * currentSpeed;
+          }
 
           this.camera.position.x += this.velocity.x * delta;
           this.camera.position.z += this.velocity.z * delta;
@@ -1072,7 +1200,15 @@
           this.camera.position.x = THREE.MathUtils.clamp(this.camera.position.x, -maxBound, maxBound);
           this.camera.position.z = THREE.MathUtils.clamp(this.camera.position.z, -maxBound, maxBound);
 
-          if (this.lockHeight) {
+          if (this.isJumping || !this.lockHeight) {
+            this.camera.position.y += this.jumpVelocity * delta;
+            this.jumpVelocity -= this.gravity * delta;
+            if (this.camera.position.y <= this.eyeHeight && this.lockHeight) {
+                this.camera.position.y = this.eyeHeight;
+                this.isJumping = false;
+                this.jumpVelocity = 0;
+            }
+          } else if (this.lockHeight) {
             this.camera.position.y = this.eyeHeight;
           }
 

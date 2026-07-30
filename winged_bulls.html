@@ -598,8 +598,8 @@
   <!-- Touchscreen Walk Controls Overlay -->
   <div id="walk-controls-overlay" class="walk-overlay hidden">
     <!-- Virtual Joystick Container -->
-    <div id="joystick-zone" style="position: absolute; bottom: 30px; left: 30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); pointer-events: auto; touch-action: none; display: flex; align-items: center; justify-content: center;">
-      <div id="joystick-knob" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.7); position: absolute; pointer-events: none; transition: transform 0.1s;"></div>
+    <div id="joystick-container" style="position: absolute; bottom: 30px; left: 30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); pointer-events: auto; touch-action: none;">
+      <div id="joystick-knob" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.7); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></div>
       <div style="position: absolute; top: -30px; color: #fff; font-size: 10px; opacity: 0.7; pointer-events:none; width: 200px; text-align: center;">انقر مرتين للقفز</div>
     </div>
     
@@ -845,7 +845,121 @@
     }
 
     // === 2. CONTROL MANAGER ===
-    class ControlManager {
+    
+class VirtualJoystick {
+  constructor(container, knob, onChange, onJump) {
+    this.container = container;
+    this.knob = knob;
+    this.onChange = onChange;
+    this.onJump = onJump;
+    this.active = false;
+    this.touchId = null;
+    this.maxRadius = 32;
+
+    this.lastTapTime = 0;
+    this.doubleTapThreshold = 350;
+
+    this.initEvents();
+  }
+
+  initEvents() {
+    const handleStart = (e) => {
+      e.preventDefault();
+
+      const now = Date.now();
+      if (now - this.lastTapTime < this.doubleTapThreshold) {
+        if (this.onJump) this.onJump();
+        this.lastTapTime = 0;
+      } else {
+        this.lastTapTime = now;
+      }
+
+      if (this.active) return;
+      const touch = e.touches ? e.touches[0] : e;
+      this.touchId = touch.identifier !== undefined ? touch.identifier : 'mouse';
+      this.active = true;
+      this.updatePosition(touch.clientX, touch.clientY);
+    };
+
+    const handleMove = (e) => {
+      if (!this.active) return;
+      let touch = null;
+      if (e.touches) {
+        for (let i = 0; i < e.touches.length; i++) {
+          if (e.touches[i].identifier === this.touchId) {
+            touch = e.touches[i];
+            break;
+          }
+        }
+      } else {
+        touch = e;
+      }
+      if (touch) {
+        e.preventDefault();
+        this.updatePosition(touch.clientX, touch.clientY);
+      }
+    };
+
+    const handleEnd = (e) => {
+      if (!this.active) return;
+      if (e.touches && this.touchId !== 'mouse') {
+        let stillActive = false;
+        for (let i = 0; i < e.touches.length; i++) {
+          if (e.touches[i].identifier === this.touchId) {
+            stillActive = true;
+            break;
+          }
+        }
+        if (stillActive) return;
+      }
+      this.active = false;
+      this.touchId = null;
+      this.resetKnob();
+    };
+
+    this.container.addEventListener('touchstart', handleStart, { passive: false });
+    window.addEventListener('touchmove', handleMove, { passive: false });
+    window.addEventListener('touchend', handleEnd, { passive: false });
+    window.addEventListener('touchcancel', handleEnd, { passive: false });
+
+    this.container.addEventListener('mousedown', handleStart);
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleEnd);
+  }
+
+  updatePosition(clientX, clientY) {
+    const rect = this.container.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    let deltaX = clientX - centerX;
+    let deltaY = clientY - centerY;
+    const dist = Math.hypot(deltaX, deltaY);
+
+    if (dist > this.maxRadius) {
+      deltaX = (deltaX / dist) * this.maxRadius;
+      deltaY = (deltaY / dist) * this.maxRadius;
+    }
+
+    this.knob.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
+
+    const normX = deltaX / this.maxRadius;
+    const normY = deltaY / this.maxRadius;
+
+    if (this.onChange) {
+      this.onChange(normX, normY);
+    }
+  }
+
+  resetKnob() {
+    this.knob.style.transform = 'translate(-50%, -50%)';
+    if (this.onChange) {
+      this.onChange(0, 0); 
+    }
+  }
+}
+
+class ControlManager {
       constructor(camera, domElement, onCoordUpdate) {
         this.camera = camera;
         this.domElement = domElement;
@@ -892,11 +1006,22 @@
         // Joystick
         this.lastTap = 0;
         this.joystickDelta = { x: 0, y: 0 };
-        this.initJoystick();
+        
         
         // Gyro
-        this.gyroControls = new DeviceOrientationControls(this.camera);
-        this.gyroControls.enabled = false;
+        
+        this.isGyroActive = false;
+        this.baseQuaternion = null;
+        this.initialGyroQuaternion = null;
+        this.gyroListenerBound = false;
+        this.lastScreenAngle = null;
+        this.gyroQuaternion = null;
+        this._tempQ = new THREE.Quaternion();
+        this._tempEuler = new THREE.Euler();
+        
+        // Joystick inputs
+        this.joystickInput = { x: 0, y: 0 };
+
 
         this.initKeyboardListeners();
         this.initTouchLookListeners();
@@ -907,21 +1032,13 @@
         if (mode === 'orbit') {
           this.orbitControls.enabled = true;
           this.orbitControls.autoRotate = true;
-          if (this.gyroControls) this.gyroControls.enabled = false;
+          this.isGyroActive = false;
         } else if (mode === 'walk') {
           this.orbitControls.enabled = false;
           this.orbitControls.autoRotate = false;
           this.camera.position.y = this.eyeHeight;
           
-          if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-            DeviceOrientationEvent.requestPermission().then(response => {
-              if (response === 'granted') {
-                this.gyroControls.enabled = true;
-              }
-            }).catch(console.error);
-          } else {
-             this.gyroControls.enabled = true;
-          }
+          
           
           const dir = new THREE.Vector3();
           this.camera.getWorldDirection(dir);
@@ -1015,74 +1132,78 @@
         }
       }
 
-      initJoystick() {
-        const zone = document.getElementById('joystick-zone');
-        const knob = document.getElementById('joystick-knob');
-        if (!zone || !knob) return;
+      async toggleGyro() {
+  if (this.isGyroActive) {
+    this.isGyroActive = false;
+    this.baseQuaternion = null;
+    this.initialGyroQuaternion = null;
+    return false;
+  }
 
-        let active = false;
-        let centerX, centerY;
-        const maxDist = 35;
-
-        let isTouch = false;
-        const handleStart = (e) => {
-          if (e.type === 'touchstart') isTouch = true;
-          if (e.type === 'mousedown' && isTouch) return;
-          e.preventDefault();
-          
-          const now = Date.now();
-          if (now - this.lastTap < 400) {
-              this.jump();
-              this.lastTap = 0;
-          } else {
-              this.lastTap = now;
-          }
-
-          active = true;
-          const rect = zone.getBoundingClientRect();
-          centerX = rect.left + rect.width / 2;
-          centerY = rect.top + rect.height / 2;
-          updateJoy(e);
-        };
-
-        const handleMove = (e) => {
-          if (!active) return;
-          e.preventDefault();
-          updateJoy(e);
-        };
-
-        const handleEnd = (e) => {
-          if (!active) return;
-          e.preventDefault();
-          active = false;
-          knob.style.transform = `translate(0px, 0px)`;
-          this.joystickDelta = { x: 0, y: 0 };
-        };
-
-        const updateJoy = (e) => {
-          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-          let dx = clientX - centerX;
-          let dy = clientY - centerY;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist > maxDist) {
-            dx = (dx / dist) * maxDist;
-            dy = (dy / dist) * maxDist;
-          }
-          knob.style.transform = `translate(${dx}px, ${dy}px)`;
-          this.joystickDelta.x = dx / maxDist;
-          this.joystickDelta.y = dy / maxDist;
-        };
-
-        zone.addEventListener('touchstart', handleStart, { passive: false });
-        zone.addEventListener('touchmove', handleMove, { passive: false });
-        zone.addEventListener('touchend', handleEnd, { passive: false });
-        zone.addEventListener('mousedown', handleStart);
-        window.addEventListener('mousemove', handleMove);
-        window.addEventListener('mouseup', handleEnd);
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    try {
+      const state = await DeviceOrientationEvent.requestPermission();
+      if (state === 'granted') {
+        this.startGyro();
+        return true;
+      } else {
+        alert('تم رفض إذن الوصول لمستشعر الحركة (Gyroscope) في الجهاز.');
+        return false;
       }
+    } catch (e) {
+      console.error(e);
+      alert('تعذر طلب إذن مستشعر الحركة.');
+      return false;
+    }
+  } else if ('DeviceOrientationEvent' in window) {
+    this.startGyro();
+    return true;
+  } else {
+    alert('مستشعر الحركة (Gyroscope) غير مدعوم على هذا الجهاز.');
+    return false;
+  }
+}
 
-      initTouchLookListeners() {
+startGyro() {
+  if (!this.gyroListenerBound) {
+    const zee = new THREE.Vector3(0, 0, 1);
+    const euler = new THREE.Euler();
+    const q0 = new THREE.Quaternion();
+    const q1 = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5));
+
+    this.onDeviceOrientation = (event) => {
+      if (!this.isGyroActive) return;
+      const alpha = event.alpha ? THREE.MathUtils.degToRad(event.alpha) : 0;
+      const beta = event.beta ? THREE.MathUtils.degToRad(event.beta) : 0;
+      const gamma = event.gamma ? THREE.MathUtils.degToRad(event.gamma) : 0;
+      const screenAngle = window.orientation || (window.screen && window.screen.orientation && window.screen.orientation.angle) || 0;
+      
+      if (this.lastScreenAngle !== null && this.lastScreenAngle !== screenAngle) {
+        this.baseQuaternion = null;
+      }
+      this.lastScreenAngle = screenAngle;
+
+      const orient = THREE.MathUtils.degToRad(screenAngle);
+
+      euler.set(beta, alpha, -gamma, 'YXZ');
+      const q = new THREE.Quaternion();
+      q.setFromEuler(euler);
+      q.multiply(q1);
+      q.multiply(q0.setFromAxisAngle(zee, -orient));
+
+      this.gyroQuaternion = q;
+    };
+
+    window.addEventListener('deviceorientation', this.onDeviceOrientation.bind(this), true);
+    this.gyroListenerBound = true;
+  }
+
+  this.isGyroActive = true;
+  this.baseQuaternion = null;
+  this.initialGyroQuaternion = null;
+}
+
+initTouchLookListeners() {
         let lastX = 0, lastY = 0;
         const onPointerDown = (e) => {
           if (e.target.closest('button, .glass-panel, .glass-hud, #dpad-container')) return;
@@ -1119,11 +1240,22 @@
         // Joystick
         this.lastTap = 0;
         this.joystickDelta = { x: 0, y: 0 };
-        this.initJoystick();
+        
         
         // Gyro
-        this.gyroControls = new DeviceOrientationControls(this.camera);
-        this.gyroControls.enabled = false; };
+        
+        this.isGyroActive = false;
+        this.baseQuaternion = null;
+        this.initialGyroQuaternion = null;
+        this.gyroListenerBound = false;
+        this.lastScreenAngle = null;
+        this.gyroQuaternion = null;
+        this._tempQ = new THREE.Quaternion();
+        this._tempEuler = new THREE.Euler();
+        
+        // Joystick inputs
+        this.joystickInput = { x: 0, y: 0 };
+ };
 
         window.addEventListener('mousedown', onPointerDown);
         window.addEventListener('mousemove', onPointerMove);
@@ -1171,8 +1303,21 @@
         if (this.mode === 'orbit') {
           this.orbitControls.update();
         } else if (this.mode === 'walk') {
-          if (this.gyroControls && this.gyroControls.enabled) {
-              this.gyroControls.update();
+          if (this.isGyroActive && this.gyroQuaternion) {
+            if (!this.baseQuaternion) {
+              this.baseQuaternion = this.camera.quaternion.clone();
+              this.initialGyroQuaternion = this.gyroQuaternion.clone().invert();
+            }
+            const targetQ = this.baseQuaternion.clone().multiply(this.initialGyroQuaternion).multiply(this.gyroQuaternion);
+            this._tempQ.copy(this.camera.quaternion).slerp(targetQ, 0.25);
+            this._tempEuler.setFromQuaternion(this._tempQ, 'YXZ');
+            this._tempEuler.z = 0;
+            this.camera.quaternion.setFromEuler(this._tempEuler);
+
+            const dir = new THREE.Vector3();
+            this.camera.getWorldDirection(dir);
+            this.yaw = Math.atan2(-dir.x, -dir.z);
+            this.pitch = Math.asin(THREE.MathUtils.clamp(dir.y, -0.99, 0.99));
           }
           this.moveVector.set(0, 0, 0);
           let forwardPower = 0, strafePower = 0;
@@ -1474,6 +1619,30 @@
       btn.addEventListener('mouseup', stop);
       btn.addEventListener('mouseleave', stop);
     });
+
+    
+    const joystickContainer = document.getElementById('joystick-container');
+    const joystickKnob = document.getElementById('joystick-knob');
+
+    if (joystickContainer && joystickKnob) {
+      new VirtualJoystick(
+        joystickContainer,
+        joystickKnob,
+        (x, y) => { 
+          if (window.controlManager) {
+            window.controlManager.joystickInput.x = x;
+            window.controlManager.joystickInput.y = y;
+          } else if (typeof controlManager !== 'undefined') {
+            controlManager.joystickInput.x = x;
+            controlManager.joystickInput.y = y;
+          }
+        },
+        () => { 
+          if (window.controlManager) window.controlManager.jump();
+          else if (typeof controlManager !== 'undefined') controlManager.jump();
+        }
+      );
+    }
 
     const clock = new THREE.Clock();
     sceneManager.renderer.setAnimationLoop(() => {

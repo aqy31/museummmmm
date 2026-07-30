@@ -1024,14 +1024,19 @@
         let centerX, centerY;
         const maxDist = 35;
 
+        let isTouch = false;
         const handleStart = (e) => {
+          if (e.type === 'touchstart') isTouch = true;
+          if (e.type === 'mousedown' && isTouch) return;
           e.preventDefault();
           
           const now = Date.now();
-          if (now - this.lastTap < 300) {
+          if (now - this.lastTap < 400) {
               this.jump();
+              this.lastTap = 0;
+          } else {
+              this.lastTap = now;
           }
-          this.lastTap = now;
 
           active = true;
           const rect = zone.getBoundingClientRect();
@@ -1189,8 +1194,12 @@
           this.velocity.z += (targetVelZ - this.velocity.z) * Math.min(delta * 10, 1.0);
           
           if (this.joystickDelta.y !== 0 || this.joystickDelta.x !== 0) {
-              this.velocity.z = -this.joystickDelta.y * currentSpeed;
-              this.velocity.x = this.joystickDelta.x * currentSpeed;
+              forwardPower = -this.joystickDelta.y;
+              strafePower = this.joystickDelta.x;
+              const targetVelX = (fwdX * forwardPower + rightX * strafePower) * currentSpeed;
+              const targetVelZ = (fwdZ * forwardPower + rightZ * strafePower) * currentSpeed;
+              this.velocity.z += (targetVelZ - this.velocity.z) * Math.min(delta * 10, 1.0);
+              this.velocity.x += (targetVelX - this.velocity.x) * Math.min(delta * 10, 1.0);
           }
 
           this.camera.position.x += this.velocity.x * delta;
@@ -1257,7 +1266,7 @@
         if (this.arButtonElement) {
           this.arButtonElement.click();
         } else {
-          alert('📱 لتشغيل الواقع المعزز (AR) على جهازك:\nيرجى فتح الموقع من متصفح يدعم AR (مثل خوذات VR أو أجهزة أندرويد المتوافقة مع ARCore).');
+          alert('📱 لتشغيل الواقع الافتراضي (VR) (AR) على جهازك:\nيرجى فتح الموقع من متصفح يدعم AR (مثل خوذات VR أو أجهزة أندرويد المتوافقة مع ARCore).');
         }
       }
     }
@@ -1288,6 +1297,20 @@
         coordZ.textContent = z;
       }
     );
+
+    // Global double-tap to jump
+    let lastScreenTap = 0;
+    document.addEventListener('touchstart', (e) => {
+        if (window.currentMode !== 'walk') return;
+        if (e.target.closest('#joystick-zone') || e.target.closest('button') || e.target.closest('.glass-panel')) return;
+        const now = Date.now();
+        if (now - lastScreenTap < 400) {
+            if (typeof controlManager !== 'undefined') controlManager.jump();
+            lastScreenTap = 0;
+        } else {
+            lastScreenTap = now;
+        }
+    });
 
     const arvrManager = new ARVRManager(sceneManager.renderer, sceneManager.scene, sceneManager.camera, null);
 
@@ -1410,7 +1433,25 @@
     });
 
     document.getElementById('btn-ar').addEventListener('click', () => {
-      arvrManager.launchAR();
+      // Gyroscope VR Mode instead of ARCore
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) { /* Safari */
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { /* IE11 */
+        elem.msRequestFullscreen();
+      }
+      
+      if (window.currentMode !== 'walk') {
+        window.sunLocked = true;
+        window.currentMode = 'walk';
+        if (typeof controlManager !== 'undefined') controlManager.setMode('walk');
+        const overlay = document.getElementById('walk-controls-overlay');
+        const hero = document.getElementById('hero-start-container');
+        if (overlay) overlay.classList.remove('hidden');
+        if (hero) hero.classList.add('hidden');
+      }
     });
 
     const dpadDirs = ['up', 'down', 'left', 'right'];

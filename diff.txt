@@ -1,0 +1,1662 @@
+6c6,7
+<   <title>Nuuri 3D - منصة المشي والواقع المعزز (AR)</title>
+---
+>   <title>سرداب النوري</title>
+>   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+11,13d11
+<   <!-- Google Model-Viewer for Native Mobile Camera AR (Android ARCore & iOS QuickLook) -->
+<   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+< 
+44,53d41
+<     /* Hidden native AR model-viewer container */
+<     #ar-viewer {
+<       display: none;
+<       position: absolute;
+<       width: 1px;
+<       height: 1px;
+<       opacity: 0;
+<       pointer-events: none;
+<     }
+< 
+87,91d74
+<     .ltr-box {
+<       direction: ltr !important;
+<       text-align: left !important;
+<     }
+< 
+165a149,156
+>     
+>     .site-info {
+>       font-size: 0.9rem;
+>       color: #aaaaaa;
+>       margin-top: 15px;
+>       line-height: 1.5;
+>     }
+>     
+172c163
+<     /* Header Navbar - Compact & Minimal */
+---
+>     /* Header Navbar */
+178c169
+<       height: 46px;
+---
+>       height: 56px;
+183,184c174
+<       padding: 0 14px;
+<       transition: opacity 0.3s ease;
+---
+>       padding: 0 20px;
+190d179
+<       gap: 8px;
+195,196c184,185
+<       font-size: 1rem;
+<       letter-spacing: 2px;
+---
+>       font-size: 1.2rem;
+>       letter-spacing: 3px;
+200,212d188
+<     .mode-badge {
+<       background: rgba(255, 255, 255, 0.1);
+<       border: 1px solid rgba(255, 255, 255, 0.15);
+<       color: #ffffff;
+<       padding: 3px 10px;
+<       border-radius: 20px;
+<       font-size: 0.75rem;
+<       font-weight: 600;
+<       display: flex;
+<       align-items: center;
+<       gap: 6px;
+<     }
+< 
+216c192
+<       gap: 8px;
+---
+>       gap: 12px;
+222,223c198,199
+<       padding: 2px;
+<       border-radius: 6px;
+---
+>       padding: 3px;
+>       border-radius: 8px;
+231,233c207,209
+<       padding: 4px 10px;
+<       border-radius: 4px;
+<       font-size: 0.75rem;
+---
+>       padding: 6px 14px;
+>       border-radius: 6px;
+>       font-size: 0.85rem;
+252c228
+<       gap: 6px;
+---
+>       gap: 8px;
+259,260c235,236
+<       padding: 5px 12px;
+<       border-radius: 6px;
+---
+>       padding: 7px 14px;
+>       border-radius: 8px;
+262c238
+<       font-size: 0.75rem;
+---
+>       font-size: 0.85rem;
+267c243
+<     .btn-ar-action:hover, .btn-ar-action.active {
+---
+>     .btn-ar-action:hover {
+273,274c249,250
+<       width: 32px;
+<       height: 32px;
+---
+>       width: 36px;
+>       height: 36px;
+281c257
+<       border-radius: 6px;
+---
+>       border-radius: 8px;
+283c259
+<       transition: background 0.2s ease, opacity 0.2s ease;
+---
+>       transition: background 0.2s ease;
+291,305c267,268
+<       width: 14px;
+<       height: 14px;
+<     }
+< 
+<     /* Floating UI Restore Button (shown when UI is hidden) */
+<     #btn-restore-ui {
+<       position: fixed;
+<       top: 10px;
+<       right: 10px;
+<       z-index: 9999;
+<       opacity: 0;
+<       pointer-events: none;
+<       background: rgba(15, 15, 15, 0.85);
+<       border: 1px solid rgba(255, 255, 255, 0.25);
+<       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+---
+>       width: 16px;
+>       height: 16px;
+308,328d270
+<     body.ui-hidden #btn-restore-ui {
+<       opacity: 0.9;
+<       pointer-events: auto;
+<     }
+< 
+<     /* UI Hide Mode Transitions - Keep Circular Joystick & Restore Button Visible */
+<     body.ui-hidden #top-header,
+<     body.ui-hidden #left-toolbar,
+<     body.ui-hidden #coordinates-hud,
+<     body.ui-hidden .speed-control-panel,
+<     body.ui-hidden #hero-start-container {
+<       opacity: 0 !important;
+<       pointer-events: none !important;
+<       transition: opacity 0.3s ease;
+<     }
+< 
+<     body.ui-hidden #joystick-container {
+<       opacity: 1 !important;
+<       pointer-events: auto !important;
+<     }
+< 
+332c274
+<       bottom: 30px;
+---
+>       bottom: 40px;
+349c291
+<       gap: 8px;
+---
+>       gap: 10px;
+353,354c295,296
+<       padding: 10px 24px;
+<       border-radius: 24px;
+---
+>       padding: 14px 34px;
+>       border-radius: 30px;
+356c298
+<       font-size: 0.85rem;
+---
+>       font-size: 1.05rem;
+359c301
+<       box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+---
+>       box-shadow: 0 10px 30px rgba(255, 255, 255, 0.25);
+365c307
+<       box-shadow: 0 12px 30px rgba(255, 255, 255, 0.35);
+---
+>       box-shadow: 0 14px 40px rgba(255, 255, 255, 0.4);
+369,370c311,312
+<       width: 15px;
+<       height: 15px;
+---
+>       width: 18px;
+>       height: 18px;
+373c315
+<     /* Left Sidebar Tools - Compact */
+---
+>     /* Left Sidebar Tools */
+376,377c318,319
+<       top: 56px;
+<       right: 14px;
+---
+>       top: 70px;
+>       right: 20px;
+381,383c323,324
+<       gap: 6px;
+<       padding: 6px;
+<       transition: opacity 0.3s ease;
+---
+>       gap: 8px;
+>       padding: 8px;
+387,388c328,329
+<       width: 32px;
+<       height: 32px;
+---
+>       width: 40px;
+>       height: 40px;
+395c336
+<       border-radius: 6px;
+---
+>       border-radius: 8px;
+410c351
+<     /* HUD LTR Coordinates Box - Compact Top Left */
+---
+>     /* HUD LTR Coordinates Box */
+413,414c354,355
+<       top: 56px;
+<       left: 14px;
+---
+>       top: 70px;
+>       left: 20px;
+416c357
+<       padding: 4px 10px;
+---
+>       padding: 8px 16px;
+419c360
+<       gap: 8px;
+---
+>       gap: 12px;
+421,422d361
+<       font-size: 0.75rem;
+<       transition: opacity 0.3s ease;
+426c365
+<       font-size: 0.75rem;
+---
+>       font-size: 0.85rem;
+430c369
+<       gap: 4px;
+---
+>       gap: 6px;
+447c386
+<       font-size: 0.7rem;
+---
+>       font-size: 0.8rem;
+462,463c401
+<       padding: 20px;
+<       transition: opacity 0.3s ease;
+---
+>       padding: 30px;
+473c411
+<       bottom: 20px;
+---
+>       bottom: 30px;
+478,479c416,417
+<       gap: 3px;
+<       padding: 3px;
+---
+>       gap: 4px;
+>       padding: 4px;
+486,488c424,426
+<       padding: 4px 10px;
+<       border-radius: 5px;
+<       font-size: 0.75rem;
+---
+>       padding: 6px 14px;
+>       border-radius: 6px;
+>       font-size: 0.8rem;
+499,500c437,438
+<     /* Smooth Circular Touch Joystick Container at Bottom Left */
+<     .joystick-box {
+---
+>     /* Clean D-Pad Container at Bottom Left */
+>     .dpad-box {
+501a440,444
+>       display: flex;
+>       flex-direction: column;
+>       align-items: center;
+>       padding: 8px;
+>       gap: 4px;
+503,513c446,447
+<       bottom: 20px;
+<       left: 20px;
+<       width: 90px;
+<       height: 90px;
+<       border-radius: 50%;
+<       background: rgba(10, 10, 10, 0.65);
+<       border: 1px solid rgba(255, 255, 255, 0.2);
+<       backdrop-filter: blur(16px);
+<       -webkit-backdrop-filter: blur(16px);
+<       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+<       touch-action: none;
+---
+>       bottom: 30px;
+>       left: 30px;
+516,519c450,471
+<     .joystick-knob {
+<       width: 38px;
+<       height: 38px;
+<       border-radius: 50%;
+---
+>     .dpad-row {
+>       display: flex;
+>       gap: 4px;
+>     }
+> 
+>     .dpad-btn {
+>       width: 48px;
+>       height: 48px;
+>       background: rgba(255, 255, 255, 0.08);
+>       border: 1px solid rgba(255, 255, 255, 0.15);
+>       color: #ffffff;
+>       border-radius: 8px;
+>       font-size: 1.1rem;
+>       display: flex;
+>       align-items: center;
+>       justify-content: center;
+>       cursor: pointer;
+>       touch-action: manipulation;
+>       transition: background 0.15s ease, transform 0.1s ease;
+>     }
+> 
+>     .dpad-btn:active, .dpad-btn.pressed {
+521,528c473,474
+<       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+<       border: 1px solid rgba(255, 255, 255, 0.9);
+<       position: absolute;
+<       top: 50%;
+<       left: 50%;
+<       transform: translate(-50%, -50%);
+<       pointer-events: none;
+<       transition: transform 0.05s ease-out;
+---
+>       color: #000000;
+>       transform: scale(0.94);
+534c480
+<         padding: 0 10px;
+---
+>         padding: 0 12px;
+538,539c484,485
+<         padding: 10px 20px;
+<         font-size: 0.8rem;
+---
+>         padding: 12px 24px;
+>         font-size: 0.95rem;
+542,543c488,490
+<         top: 52px;
+<         left: 10px;
+---
+>         top: auto;
+>         bottom: 110px;
+>         left: 12px;
+545,549c492,494
+<       .joystick-box {
+<         bottom: 16px;
+<         left: 16px;
+<         width: 84px;
+<         height: 84px;
+---
+>       .dpad-box {
+>         bottom: 20px;
+>         left: 20px;
+571c516
+<     src="./nury.glb" 
+---
+>     src="./al_nuri_crypt.glb" 
+575c520,521
+<     shadow-intensity="1">
+---
+>     shadow-intensity="1"
+>     style="display: none; position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
+577a524
+> 
+584c531
+<       <h1 class="logo-title">NUURI <span>3D</span></h1>
+---
+>       <h1 class="logo-title">متحف <span>التراث</span></h1>
+588a536
+>       <p class="site-info">سرداب الجامع النوري، أحد أهم المعالم التاريخية في الموصل القديمة، يتميز بعمارته الفريدة وتاريخه العريق.</p>
+592,596d539
+<   <!-- Floating Restore UI Button (Visible when UI is hidden) -->
+<   <button id="btn-restore-ui" class="icon-btn" title="إظهار الواجهة">
+<     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+<   </button>
+< 
+598a542
+>     
+599a544,546
+>       <a href="index.html" class="icon-btn" style="text-decoration:none; margin-left: 10px; width: auto; padding: 0 10px;" title="العودة للمتحف">
+>         <span style="font-size:12px; font-weight:bold;">العودة</span>
+>       </a>
+601c548,549
+<         <span class="brand-name">NUURI</span>
+---
+> 
+>         <span class="brand-name">المتحف</span>
+603,605d550
+<       <div class="mode-badge">
+<         <span id="mode-status-text">نظرة عامة (360°)</span>
+<       </div>
+626,627c571,572
+<       <button id="btn-gyro" class="btn-ar-action" title="تفعيل/إلغاء تتبع حركة الهاتف (VR Gyro)">
+<         <span>📱 واقع افتراضي (Gyro)</span>
+---
+>       <button id="btn-ar" class="btn-ar-action">
+>         <span>واقع معزز (AR)</span>
+630,633d574
+<       <button id="btn-toggle-ui" class="icon-btn" title="إخفاء الواجهة بالكامل">
+<         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+<       </button>
+< 
+650,652d590
+<     <button id="btn-gyro-tool" class="tool-btn" title="تفعيل تتبع حركة الشاشة والهاتف (Gyro VR)">
+<       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="3" ry="3"/><path d="M12 18h.01"/><path d="M8 6h8"/></svg>
+<     </button>
+675,677c613,616
+<     <!-- Bottom Left Smooth Circular Touch Joystick -->
+<     <div id="joystick-container" class="joystick-box">
+<       <div id="joystick-knob" class="joystick-knob"></div>
+---
+>     <!-- Virtual Joystick Container -->
+>     <div id="joystick-container" style="position: absolute; bottom: 30px; left: 30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); pointer-events: auto; touch-action: none;">
+>       <div id="joystick-knob" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.7); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;"></div>
+>       <div style="position: absolute; top: -30px; color: #fff; font-size: 10px; opacity: 0.7; pointer-events:none; width: 200px; text-align: center;">انقر مرتين للقفز</div>
+679,680c618,619
+< 
+<     <!-- Speed Controls & Mobile Gyro VR Toggle -->
+---
+>     
+>     <!-- Speed Controls -->
+685d623
+<       <button id="btn-gyro-walk" class="speed-btn" title="حركة الهاتف 360°">📱 حركة الهاتف (Gyro)</button>
+694a633,634
+>     import { DeviceOrientationControls } from './DeviceOrientationControls.js';
+>     import { ARButton } from 'three/addons/webxr/ARButton.js';
+695a636,641
+>     import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+>     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+>     import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+>     import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+>     
+> 
+715c661,662
+<           powerPreference: 'high-performance'
+---
+>           powerPreference: 'high-performance',
+>           preserveDrawingBuffer: true
+718c665,670
+<         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+---
+> 
+>         if (this.composer) {
+>             this.composer.setSize(window.innerWidth, window.innerHeight);
+>         }
+>     
+>         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+720c672
+<         this.renderer.shadowMap.type = THREE.PCFShadowMap;
+---
+>         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+722c674
+<         this.renderer.toneMappingExposure = 1.35;
+---
+>         this.renderer.toneMappingExposure = 1.0;
+725a678,688
+> 
+>         this.composer = new EffectComposer(this.renderer);
+>         const renderPass = new RenderPass(this.scene, this.camera);
+>         this.composer.addPass(renderPass);
+>         
+>         const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.35, 0.5, 0.85);
+>         this.composer.addPass(bloomPass);
+> 
+>         const outputPass = new OutputPass();
+>         this.composer.addPass(outputPass);
+>     
+737d699
+<         this.colliders = [];
+743c705,707
+<         this.hemiLight = new THREE.HemisphereLight('#ffffff', '#1f1f1f', 1.6);
+---
+>         // High-End Graphic Lighting Setup
+>         // Hemisphere light (sky/ground)
+>         this.hemiLight = new THREE.HemisphereLight('#e0e0e0', '#222222', 1.0);
+746c710,711
+<         this.dirLight = new THREE.DirectionalLight('#ffffff', 2.4);
+---
+>         // Main Sun Light (Warm and Bright)
+>         this.dirLight = new THREE.DirectionalLight('#fffaeb', 3.5);
+749,750c714,715
+<         this.dirLight.shadow.mapSize.width = 2048;
+<         this.dirLight.shadow.mapSize.height = 2048;
+---
+>         this.dirLight.shadow.mapSize.width = 4096;
+>         this.dirLight.shadow.mapSize.height = 4096;
+753c718,721
+<         
+---
+>         this.dirLight.shadow.bias = -0.0001;
+>         this.dirLight.shadow.normalBias = 0.02;
+>         this.dirLight.shadow.radius = 2.5; // Soft Shadows
+> 
+759,761d726
+<         this.dirLight.shadow.bias = -0.0003;
+<         this.dirLight.shadow.normalBias = 0.02;
+< 
+764c729,730
+<         this.fillLight = new THREE.DirectionalLight('#e0e0e0', 1.1);
+---
+>         // Fill Light (Cool Sky Blue) to contrast the warm sun
+>         this.fillLight = new THREE.DirectionalLight('#aaccff', 1.8);
+768c734
+<         const archAmbient = new THREE.AmbientLight('#ffffff', 0.6);
+---
+>         const archAmbient = new THREE.AmbientLight('#ffffff', 0.5);
+817,830d782
+< 
+<             this.modelBox = new THREE.Box3().setFromObject(this.model);
+<             this.modelBox.getCenter(this.modelCenter);
+<             this.modelBox.getSize(this.modelSize);
+< 
+<             this.model.position.x = -this.modelCenter.x;
+<             this.model.position.z = -this.modelCenter.z;
+<             this.model.position.y = -this.modelBox.min.y;
+< 
+<             // Add model to scene FIRST so world matrices are accurately calculated
+<             this.scene.add(this.model);
+<             this.scene.updateMatrixWorld(true);
+< 
+<             this.colliders = [];
+834a787,788
+>                 if (!this.colliders) this.colliders = [];
+>                 this.colliders.push(child);
+837,842d790
+<                   if (!child.geometry.boundingBox) {
+<                     child.geometry.computeBoundingBox();
+<                   }
+<                   if (!child.geometry.boundingSphere) {
+<                     child.geometry.computeBoundingSphere(); // Crucial for fast Raycaster rejection
+<                   }
+850d797
+<                 this.colliders.push(child);
+853d799
+<             console.log('[Collider] Using', this.colliders.length, 'mesh colliders');
+854a801,809
+>             this.modelBox = new THREE.Box3().setFromObject(this.model);
+>             this.modelBox.getCenter(this.modelCenter);
+>             this.modelBox.getSize(this.modelSize);
+> 
+>             this.model.position.x = -this.modelCenter.x;
+>             this.model.position.z = -this.modelCenter.z;
+>             this.model.position.y = -this.modelBox.min.y;
+> 
+>             this.scene.add(this.model);
+885a841,845
+> 
+>         if (this.composer) {
+>             this.composer.setSize(window.innerWidth, window.innerHeight);
+>         }
+>     
+889c849,858
+<         this.renderer.render(this.scene, this.camera);
+---
+>         
+>         if (this.dirLight && !window.sunLocked && window.currentMode !== 'walk') {
+>             // User controls the sun by rotating the camera!
+>             const camAngle = Math.atan2(this.camera.position.z, this.camera.position.x);
+>             const sunAngle = camAngle + (Math.PI / 4); // Sun is 45 degrees offset from camera
+>             const radius = 70;
+>             this.dirLight.position.x = Math.cos(sunAngle) * radius;
+>             this.dirLight.position.z = Math.sin(sunAngle) * radius;
+>         }
+>         this.composer ? this.composer.render() : this.renderer.render(this.scene, this.camera);
+890a860
+>     }
+892,900c862,889
+<       // Performance: reduce render workload during walk mode
+<       enterWalkPerformance() {
+<         this._savedPixelRatio = this.renderer.getPixelRatio();
+<         this._savedFar = this.camera.far;
+<         this._savedFogDensity = this.scene.fog ? this.scene.fog.density : null;
+<         this.renderer.setPixelRatio(1.0);
+<         this.camera.far = 120;
+<         this.camera.updateProjectionMatrix();
+<         if (this.scene.fog) this.scene.fog.density = 0.012;
+---
+>     // === 2. CONTROL MANAGER ===
+>     
+> class VirtualJoystick {
+>   constructor(container, knob, onChange, onJump) {
+>     this.container = container;
+>     this.knob = knob;
+>     this.onChange = onChange;
+>     this.onJump = onJump;
+>     this.active = false;
+>     this.touchId = null;
+>     this.maxRadius = 32;
+> 
+>     this.lastTapTime = 0;
+>     this.doubleTapThreshold = 350;
+> 
+>     this.initEvents();
+>   }
+> 
+>   initEvents() {
+>     const handleStart = (e) => {
+>       e.preventDefault();
+> 
+>       const now = Date.now();
+>       if (now - this.lastTapTime < this.doubleTapThreshold) {
+>         if (this.onJump) this.onJump();
+>         this.lastTapTime = 0;
+>       } else {
+>         this.lastTapTime = now;
+903,905c892,907
+<       exitWalkPerformance() {
+<         if (this._savedPixelRatio !== undefined) {
+<           this.renderer.setPixelRatio(this._savedPixelRatio);
+---
+>       if (this.active) return;
+>       const touch = e.touches ? e.touches[0] : e;
+>       this.touchId = touch.identifier !== undefined ? touch.identifier : 'mouse';
+>       this.active = true;
+>       this.updatePosition(touch.clientX, touch.clientY);
+>     };
+> 
+>     const handleMove = (e) => {
+>       if (!this.active) return;
+>       let touch = null;
+>       if (e.touches) {
+>         for (let i = 0; i < e.touches.length; i++) {
+>           if (e.touches[i].identifier === this.touchId) {
+>             touch = e.touches[i];
+>             break;
+>           }
+907,909c909,926
+<         if (this._savedFar !== undefined) {
+<           this.camera.far = this._savedFar;
+<           this.camera.updateProjectionMatrix();
+---
+>       } else {
+>         touch = e;
+>       }
+>       if (touch) {
+>         e.preventDefault();
+>         this.updatePosition(touch.clientX, touch.clientY);
+>       }
+>     };
+> 
+>     const handleEnd = (e) => {
+>       if (!this.active) return;
+>       if (e.touches && this.touchId !== 'mouse') {
+>         let stillActive = false;
+>         for (let i = 0; i < e.touches.length; i++) {
+>           if (e.touches[i].identifier === this.touchId) {
+>             stillActive = true;
+>             break;
+>           }
+911,913c928
+<         if (this._savedFogDensity !== null && this._savedFogDensity !== undefined && this.scene.fog) {
+<           this.scene.fog.density = this._savedFogDensity;
+<         }
+---
+>         if (stillActive) return;
+914a930,956
+>       this.active = false;
+>       this.touchId = null;
+>       this.resetKnob();
+>     };
+> 
+>     this.container.addEventListener('touchstart', handleStart, { passive: false });
+>     window.addEventListener('touchmove', handleMove, { passive: false });
+>     window.addEventListener('touchend', handleEnd, { passive: false });
+>     window.addEventListener('touchcancel', handleEnd, { passive: false });
+> 
+>     this.container.addEventListener('mousedown', handleStart);
+>     window.addEventListener('mousemove', handleMove);
+>     window.addEventListener('mouseup', handleEnd);
+>   }
+> 
+>   updatePosition(clientX, clientY) {
+>     const rect = this.container.getBoundingClientRect();
+>     const centerX = rect.left + rect.width / 2;
+>     const centerY = rect.top + rect.height / 2;
+> 
+>     let deltaX = clientX - centerX;
+>     let deltaY = clientY - centerY;
+>     const dist = Math.hypot(deltaX, deltaY);
+> 
+>     if (dist > this.maxRadius) {
+>       deltaX = (deltaX / dist) * this.maxRadius;
+>       deltaY = (deltaY / dist) * this.maxRadius;
+917,918c959,977
+<     // === 2. CONTROL MANAGER ===
+<     class ControlManager {
+---
+>     this.knob.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
+> 
+>     const normX = deltaX / this.maxRadius;
+>     const normY = deltaY / this.maxRadius;
+> 
+>     if (this.onChange) {
+>       this.onChange(normX, normY);
+>     }
+>   }
+> 
+>   resetKnob() {
+>     this.knob.style.transform = 'translate(-50%, -50%)';
+>     if (this.onChange) {
+>       this.onChange(0, 0); 
+>     }
+>   }
+> }
+> 
+> class ControlManager {
+925,937d983
+<         this.colliders = [];
+<         this.raycaster = new THREE.Raycaster();
+< 
+<         // Pre-allocated vectors (reused every frame, zero garbage collection)
+<         this._rayOrigin = new THREE.Vector3();
+<         this._rayDir = new THREE.Vector3();
+< 
+<         // Jump system
+<         this.isJumping = false;
+<         this.jumpVelocity = 0;
+<         this.gravity = 15;
+<         this.jumpForce = 6.5;
+< 
+950a997,1001
+>         this.colliders = [];
+>         this.raycaster = new THREE.Raycaster();
+>         this._rayOrigin = new THREE.Vector3();
+>         this._rayDir = new THREE.Vector3();
+>         this.wallMesh = null;
+967d1017
+<         this.joystickVector = { x: 0, y: 0 };
+969c1019,1032
+< 
+---
+>         
+>         // Jump Physics
+>         this.isJumping = false;
+>         this.jumpVelocity = 0;
+>         this.gravity = 15;
+>         this.jumpPower = 6;
+>         
+>         // Joystick
+>         this.lastTap = 0;
+>         this.joystickDelta = { x: 0, y: 0 };
+>         
+>         
+>         // Gyro
+>         
+971d1033
+<         this.gyroQuaternion = null;
+976,984c1038
+< 
+<         // Wall mesh collider (dedicated ultra-fast 0.01ms collision geometry)
+<         this.wallMesh = null;
+< 
+<         // Pre-allocated quaternions to avoid GC during walk
+<         this._qYaw = new THREE.Quaternion();
+<         this._qPitch = new THREE.Quaternion();
+<         this._axisY = new THREE.Vector3(0, 1, 0);
+<         this._axisX = new THREE.Vector3(1, 0, 0);
+---
+>         this.gyroQuaternion = null;
+986c1040,1043
+<         this._tempEuler = new THREE.Euler(0, 0, 0, 'YXZ');
+---
+>         this._tempEuler = new THREE.Euler();
+>         
+>         // Joystick inputs
+>         this.joystickInput = { x: 0, y: 0 };
+987a1045
+> 
+991a1050,1148
+>       setMode(mode) {
+>         this.mode = mode;
+>         if (mode === 'orbit') {
+>           this.orbitControls.enabled = true;
+>           this.orbitControls.autoRotate = true;
+>           this.isGyroActive = false;
+>         } else if (mode === 'walk') {
+>           this.orbitControls.enabled = false;
+>           this.orbitControls.autoRotate = false;
+>           this.camera.position.y = this.eyeHeight;
+>           
+>           
+>           
+>           const dir = new THREE.Vector3();
+>           this.camera.getWorldDirection(dir);
+>           this.yaw = Math.atan2(-dir.x, -dir.z);
+>           this.pitch = Math.asin(THREE.MathUtils.clamp(dir.y, -0.99, 0.99));
+>         }
+>       }
+> 
+>       animateToEntrance(
+>         targetPos = new THREE.Vector3(-17.13, 1.85, -1.31),
+>         targetLookAt = new THREE.Vector3(-10.0, 1.85, 5.0),
+>         onComplete = null
+>       ) {
+>         this.isTransitioning = true;
+>         this.transitionProgress = 0;
+>         this.onTransitionComplete = onComplete;
+>         this.orbitControls.autoRotate = false;
+> 
+>         this.transitionStartPos.copy(this.camera.position);
+>         this.transitionEndPos.copy(targetPos);
+>         this.transitionStartTarget.copy(this.orbitControls.target);
+>         this.transitionEndTarget.copy(targetLookAt);
+> 
+>         this.orbitControls.enabled = false;
+>       }
+> 
+>       setSpeed(speedType) {
+>         switch (speedType) {
+>           case 'slow': this.speedMultiplier = 1.8; break;
+>           case 'normal': this.speedMultiplier = 3.5; break;
+>           case 'fast': this.speedMultiplier = 7.0; break;
+>         }
+>       }
+> 
+>       toggleHeightLock() {
+>         this.lockHeight = !this.lockHeight;
+>         if (this.isJumping || !this.lockHeight) {
+>             this.camera.position.y += this.jumpVelocity * delta;
+>             this.jumpVelocity -= this.gravity * delta;
+>             if (this.camera.position.y <= this.eyeHeight && this.lockHeight) {
+>                 this.camera.position.y = this.eyeHeight;
+>                 this.isJumping = false;
+>                 this.jumpVelocity = 0;
+>             }
+>           } else if (this.lockHeight) {
+>             this.camera.position.y = this.eyeHeight;
+>           }
+>         return this.lockHeight;
+>       }
+> 
+>       resetCamera(targetPosition = new THREE.Vector3(0, 25, 50)) {
+>         this.camera.position.copy(targetPosition);
+>         this.camera.lookAt(0, 2, 0);
+>         this.orbitControls.target.set(0, 2, 0);
+>         this.yaw = 0;
+>         this.pitch = 0;
+>         this.velocity.set(0, 0, 0);
+>         this.orbitControls.autoRotate = true;
+>       }
+> 
+>       initKeyboardListeners() {
+>         window.addEventListener('keydown', (e) => {
+>           if (this.mode !== 'walk' || this.isTransitioning) return;
+>           switch (e.code) {
+>             case 'KeyW': case 'ArrowUp': this.keys.forward = true; break;
+>             case 'KeyS': case 'ArrowDown': this.keys.backward = true; break;
+>             case 'KeyA': case 'ArrowLeft': this.keys.left = true; break;
+>             case 'KeyD': case 'ArrowRight': this.keys.right = true; break;
+>             case 'ShiftLeft': case 'ShiftRight': this.keys.sprint = true; break;
+>             case 'Space': this.jump(); break;
+>           }
+>         });
+> 
+>         window.addEventListener('keyup', (e) => {
+>           if (this.mode !== 'walk' || this.isTransitioning) return;
+>           switch (e.code) {
+>             case 'KeyW': case 'ArrowUp': this.keys.forward = false; break;
+>             case 'KeyS': case 'ArrowDown': this.keys.backward = false; break;
+>             case 'KeyA': case 'ArrowLeft': this.keys.left = false; break;
+>             case 'KeyD': case 'ArrowRight': this.keys.right = false; break;
+>             case 'ShiftLeft': case 'ShiftRight': this.keys.sprint = false; break;
+>           }
+>         });
+>       }
+> 
+>       
+>       
+1036d1192
+<             // Filter triangles in waist height range (~0.1m to 2.4m)
+1041d1196
+<             // Calculate triangle normal in world space
+1046d1200
+<             // Wall check: normal must be substantially horizontal (|normal.y| < 0.7)
+1063,1072d1216
+<           console.log('[WallMesh] Created ultra-fast wall collider mesh with', wallPositions.length / 9, 'triangles');
+<         }
+<       }
+< 
+<       // Jump trigger
+<       triggerJump() {
+<         if (this.mode !== 'walk') return;
+<         if (!this.isJumping) {
+<           this.isJumping = true;
+<           this.jumpVelocity = this.jumpForce;
+1081,1083c1225
+<         // --- Handle Jump / Gravity ---
+<         if (this.isJumping) {
+<           this.jumpVelocity -= this.gravity * delta;
+---
+>         if (this.isJumping || !this.lockHeight) {
+1085c1227,1228
+<           if (this.camera.position.y <= this.eyeHeight) {
+---
+>           this.jumpVelocity -= this.gravity * delta;
+>           if (this.camera.position.y <= this.eyeHeight && this.lockHeight) {
+1094d1236
+<         // --- Ultra-Fast Wall Collision (0.01ms) ---
+1100d1241
+<           // Ray starts at CURRENT position, points toward movement
+1111d1251
+<             // Wall detected! Stop at safe distance before wall
+1114d1253
+<               // Can only move partially
+1121d1259
+<               // Wall is far enough, move normally
+1126d1263
+<             // No wall, move freely
+1134,1135c1271
+< 
+<         // World bounds clamp
+---
+>         
+1141,1142c1277,1281
+<       setJoystickInput(x, y) {
+<         this.joystickVector = { x, y };
+---
+>       jump() {
+>         if (!this.isJumping && this.mode === 'walk') {
+>           this.isJumping = true;
+>           this.jumpVelocity = this.jumpPower;
+>         }
+1146,1151c1285,1290
+<         if (this.isGyroActive) {
+<           this.isGyroActive = false;
+<           this.baseQuaternion = null;
+<           this.initialGyroQuaternion = null;
+<           return false;
+<         }
+---
+>   if (this.isGyroActive) {
+>     this.isGyroActive = false;
+>     this.baseQuaternion = null;
+>     this.initialGyroQuaternion = null;
+>     return false;
+>   }
+1153,1174c1292,1300
+<         if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+<           try {
+<             const state = await DeviceOrientationEvent.requestPermission();
+<             if (state === 'granted') {
+<               this.startGyro();
+<               return true;
+<             } else {
+<               alert('تم رفض إذن الوصول لمستشعر الحركة (Gyroscope) في الجهاز.');
+<               return false;
+<             }
+<           } catch (e) {
+<             console.error(e);
+<             alert('تعذر طلب إذن مستشعر الحركة.');
+<             return false;
+<           }
+<         } else if ('DeviceOrientationEvent' in window) {
+<           this.startGyro();
+<           return true;
+<         } else {
+<           alert('مستشعر الحركة (Gyroscope) غير مدعوم على هذا الجهاز.');
+<           return false;
+<         }
+---
+>   if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+>     try {
+>       const state = await DeviceOrientationEvent.requestPermission();
+>       if (state === 'granted') {
+>         this.startGyro();
+>         return true;
+>       } else {
+>         alert('تم رفض إذن الوصول لمستشعر الحركة (Gyroscope) في الجهاز.');
+>         return false;
+1175a1302,1314
+>     } catch (e) {
+>       console.error(e);
+>       alert('تعذر طلب إذن مستشعر الحركة.');
+>       return false;
+>     }
+>   } else if ('DeviceOrientationEvent' in window) {
+>     this.startGyro();
+>     return true;
+>   } else {
+>     alert('مستشعر الحركة (Gyroscope) غير مدعوم على هذا الجهاز.');
+>     return false;
+>   }
+> }
+1177,1182c1316,1321
+<       startGyro() {
+<         if (!this.gyroListenerBound) {
+<           const zee = new THREE.Vector3(0, 0, 1);
+<           const euler = new THREE.Euler();
+<           const q0 = new THREE.Quaternion();
+<           const q1 = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5));
+---
+> startGyro() {
+>   if (!this.gyroListenerBound) {
+>     const zee = new THREE.Vector3(0, 0, 1);
+>     const euler = new THREE.Euler();
+>     const q0 = new THREE.Quaternion();
+>     const q1 = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5));
+1184,1195c1323,1333
+<           this.onDeviceOrientation = (event) => {
+<             if (!this.isGyroActive) return;
+<             const alpha = event.alpha ? THREE.MathUtils.degToRad(event.alpha) : 0;
+<             const beta = event.beta ? THREE.MathUtils.degToRad(event.beta) : 0;
+<             const gamma = event.gamma ? THREE.MathUtils.degToRad(event.gamma) : 0;
+<             const screenAngle = window.orientation || (window.screen && window.screen.orientation && window.screen.orientation.angle) || 0;
+<             
+<             // iPad / Tablet orientation fix: reset base calibration if iPad rotates between portrait & landscape
+<             if (this.lastScreenAngle !== null && this.lastScreenAngle !== screenAngle) {
+<               this.baseQuaternion = null;
+<             }
+<             this.lastScreenAngle = screenAngle;
+---
+>     this.onDeviceOrientation = (event) => {
+>       if (!this.isGyroActive) return;
+>       const alpha = event.alpha ? THREE.MathUtils.degToRad(event.alpha) : 0;
+>       const beta = event.beta ? THREE.MathUtils.degToRad(event.beta) : 0;
+>       const gamma = event.gamma ? THREE.MathUtils.degToRad(event.gamma) : 0;
+>       const screenAngle = window.orientation || (window.screen && window.screen.orientation && window.screen.orientation.angle) || 0;
+>       
+>       if (this.lastScreenAngle !== null && this.lastScreenAngle !== screenAngle) {
+>         this.baseQuaternion = null;
+>       }
+>       this.lastScreenAngle = screenAngle;
+1197c1335
+<             const orient = THREE.MathUtils.degToRad(screenAngle);
+---
+>       const orient = THREE.MathUtils.degToRad(screenAngle);
+1199,1203c1337,1341
+<             euler.set(beta, alpha, -gamma, 'YXZ');
+<             const q = new THREE.Quaternion();
+<             q.setFromEuler(euler);
+<             q.multiply(q1);
+<             q.multiply(q0.setFromAxisAngle(zee, -orient));
+---
+>       euler.set(beta, alpha, -gamma, 'YXZ');
+>       const q = new THREE.Quaternion();
+>       q.setFromEuler(euler);
+>       q.multiply(q1);
+>       q.multiply(q0.setFromAxisAngle(zee, -orient));
+1205,1206c1343,1344
+<             this.gyroQuaternion = q;
+<           };
+---
+>       this.gyroQuaternion = q;
+>     };
+1208,1210c1346,1348
+<           window.addEventListener('deviceorientation', this.onDeviceOrientation.bind(this), true);
+<           this.gyroListenerBound = true;
+<         }
+---
+>     window.addEventListener('deviceorientation', this.onDeviceOrientation.bind(this), true);
+>     this.gyroListenerBound = true;
+>   }
+1212,1215c1350,1353
+<         this.isGyroActive = true;
+<         this.baseQuaternion = null;
+<         this.initialGyroQuaternion = null;
+<       }
+---
+>   this.isGyroActive = true;
+>   this.baseQuaternion = null;
+>   this.initialGyroQuaternion = null;
+> }
+1217,1312c1355
+<       setMode(mode) {
+<         this.mode = mode;
+<         if (mode === 'orbit') {
+<           this.orbitControls.enabled = !this.isGyroActive;
+<           this.orbitControls.autoRotate = !this.isGyroActive;
+<         } else if (mode === 'walk') {
+<           this.orbitControls.enabled = false;
+<           this.orbitControls.autoRotate = false;
+<           this.camera.position.y = this.eyeHeight;
+<           this.velocity.set(0, 0, 0);
+<           this.isJumping = false;
+<           this.jumpVelocity = 0;
+<           this.playerOnFloor = true;
+<           
+<           const dir = new THREE.Vector3();
+<           this.camera.getWorldDirection(dir);
+<           this.yaw = Math.atan2(-dir.x, -dir.z);
+<           this.pitch = Math.asin(THREE.MathUtils.clamp(dir.y, -0.99, 0.99));
+<         }
+<       }
+< 
+<       animateToEntrance(
+<         targetPos = new THREE.Vector3(-17.13, 1.85, -1.31),
+<         targetLookAt = new THREE.Vector3(-10.0, 1.85, 5.0),
+<         onComplete = null
+<       ) {
+<         this.isTransitioning = true;
+<         this.transitionProgress = 0;
+<         this.onTransitionComplete = onComplete;
+<         this.orbitControls.autoRotate = false;
+< 
+<         this.transitionStartPos.copy(this.camera.position);
+<         this.transitionEndPos.copy(targetPos);
+<         this.transitionStartTarget.copy(this.orbitControls.target);
+<         this.transitionEndTarget.copy(targetLookAt);
+< 
+<         this.orbitControls.enabled = false;
+<         this.velocity.set(0, 0, 0);
+<         this.isJumping = false;
+<         this.jumpVelocity = 0;
+<       }
+< 
+<       setSpeed(speedType) {
+<         switch (speedType) {
+<           case 'slow': this.speedMultiplier = 1.8; break;
+<           case 'normal': this.speedMultiplier = 3.5; break;
+<           case 'fast': this.speedMultiplier = 7.0; break;
+<         }
+<       }
+< 
+<       toggleHeightLock() {
+<         this.lockHeight = !this.lockHeight;
+<         if (this.lockHeight) {
+<           this.camera.position.y = this.eyeHeight;
+<         }
+<         return this.lockHeight;
+<       }
+< 
+<       resetCamera(targetPosition = new THREE.Vector3(0, 25, 50)) {
+<         this.camera.position.copy(targetPosition);
+<         this.camera.lookAt(0, 2, 0);
+<         this.orbitControls.target.set(0, 2, 0);
+<         this.yaw = 0;
+<         this.pitch = 0;
+<         this.velocity.set(0, 0, 0);
+<         this.isJumping = false;
+<         this.jumpVelocity = 0;
+<         this.orbitControls.autoRotate = !this.isGyroActive;
+<       }
+< 
+<       initKeyboardListeners() {
+<         window.addEventListener('keydown', (e) => {
+<           if (this.mode !== 'walk' || this.isTransitioning) return;
+<           switch (e.code) {
+<             case 'KeyW': case 'ArrowUp': this.keys.forward = true; break;
+<             case 'KeyS': case 'ArrowDown': this.keys.backward = true; break;
+<             case 'KeyA': case 'ArrowLeft': this.keys.left = true; break;
+<             case 'KeyD': case 'ArrowRight': this.keys.right = true; break;
+<             case 'ShiftLeft': case 'ShiftRight': this.keys.sprint = true; break;
+<             case 'Space': e.preventDefault(); this.triggerJump(); break;
+<           }
+<         });
+< 
+<         window.addEventListener('keyup', (e) => {
+<           if (this.mode !== 'walk' || this.isTransitioning) return;
+<           switch (e.code) {
+<             case 'KeyW': case 'ArrowUp': this.keys.forward = false; break;
+<             case 'KeyS': case 'ArrowDown': this.keys.backward = false; break;
+<             case 'KeyA': case 'ArrowLeft': this.keys.left = false; break;
+<             case 'KeyD': case 'ArrowRight': this.keys.right = false; break;
+<             case 'ShiftLeft': case 'ShiftRight': this.keys.sprint = false; break;
+<           }
+<         });
+<       }
+< 
+<       initTouchLookListeners() {
+---
+> initTouchLookListeners() {
+1315c1358
+<           if (e.target.closest('button, .glass-panel, .glass-hud, #joystick-container')) return;
+---
+>           if (e.target.closest('button, .glass-panel, .glass-hud, #dpad-container')) return;
+1322c1365
+<           if (!this.isTouchLooking || this.isTransitioning || this.isGyroActive) return;
+---
+>           if (!this.isTouchLooking || this.isTransitioning) return;
+1338c1381,1407
+<         const onPointerUp = () => { this.isTouchLooking = false; };
+---
+>         const onPointerUp = () => { this.isTouchLooking = false;
+>         
+>         // Jump Physics
+>         this.isJumping = false;
+>         this.jumpVelocity = 0;
+>         this.gravity = 15;
+>         this.jumpPower = 6;
+>         
+>         // Joystick
+>         this.lastTap = 0;
+>         this.joystickDelta = { x: 0, y: 0 };
+>         
+>         
+>         // Gyro
+>         
+>         this.isGyroActive = false;
+>         this.baseQuaternion = null;
+>         this.initialGyroQuaternion = null;
+>         this.gyroListenerBound = false;
+>         this.lastScreenAngle = null;
+>         this.gyroQuaternion = null;
+>         this._tempQ = new THREE.Quaternion();
+>         this._tempEuler = new THREE.Euler();
+>         
+>         // Joystick inputs
+>         this.joystickInput = { x: 0, y: 0 };
+>  };
+1347a1417,1423
+>       setDpadDirection(dirStr, active) {
+>         if (dirStr === 'up') this.keys.forward = active;
+>         if (dirStr === 'down') this.keys.backward = active;
+>         if (dirStr === 'left') this.keys.left = active;
+>         if (dirStr === 'right') this.keys.right = active;
+>       }
+> 
+1376,1417c1452
+<         if (this.isGyroActive && this.gyroQuaternion) {
+<           if (!this.baseQuaternion) {
+<             this.baseQuaternion = this.camera.quaternion.clone();
+<             this.initialGyroQuaternion = this.gyroQuaternion.clone().invert();
+<           }
+<           const targetQ = this.baseQuaternion.clone().multiply(this.initialGyroQuaternion).multiply(this.gyroQuaternion);
+<           this._tempQ.copy(this.camera.quaternion).slerp(targetQ, 0.25);
+<           this._tempEuler.setFromQuaternion(this._tempQ, 'YXZ');
+<           this._tempEuler.z = 0; // Keep horizon 100% straight & level (no tilt)
+<           this.camera.quaternion.setFromEuler(this._tempEuler);
+< 
+<           const dir = new THREE.Vector3();
+<           this.camera.getWorldDirection(dir);
+<           this.yaw = Math.atan2(-dir.x, -dir.z);
+<           this.pitch = Math.asin(THREE.MathUtils.clamp(dir.y, -0.99, 0.99));
+< 
+<           if (this.mode === 'walk') {
+<             this.moveVector.set(0, 0, 0);
+<             let forwardPower = 0, strafePower = 0;
+<             if (this.keys.forward) forwardPower += 1;
+<             if (this.keys.backward) forwardPower -= 1;
+<             if (this.keys.left) strafePower -= 1;
+<             if (this.keys.right) strafePower += 1;
+< 
+<             if (Math.abs(this.joystickVector.y) > 0.05) forwardPower = -this.joystickVector.y;
+<             if (Math.abs(this.joystickVector.x) > 0.05) strafePower = this.joystickVector.x;
+< 
+<             const sinYaw = Math.sin(this.yaw);
+<             const cosYaw = Math.cos(this.yaw);
+<             const fwdX = -sinYaw, fwdZ = -cosYaw;
+<             const rightX = cosYaw, rightZ = -sinYaw;
+< 
+<             const currentSpeed = (this.keys.sprint ? this.speedMultiplier * 1.6 : this.speedMultiplier);
+<             const targetVelX = (fwdX * forwardPower + rightX * strafePower) * currentSpeed;
+<             const targetVelZ = (fwdZ * forwardPower + rightZ * strafePower) * currentSpeed;
+< 
+<             this.velocity.x += (targetVelX - this.velocity.x) * Math.min(delta * 10, 1.0);
+<             this.velocity.z += (targetVelZ - this.velocity.z) * Math.min(delta * 10, 1.0);
+< 
+<             this.applyCollisionAndMove(delta);
+<           }
+<         } else if (this.mode === 'orbit') {
+---
+>         if (this.mode === 'orbit') {
+1419a1455,1470
+>           if (this.isGyroActive && this.gyroQuaternion) {
+>             if (!this.baseQuaternion) {
+>               this.baseQuaternion = this.camera.quaternion.clone();
+>               this.initialGyroQuaternion = this.gyroQuaternion.clone().invert();
+>             }
+>             const targetQ = this.baseQuaternion.clone().multiply(this.initialGyroQuaternion).multiply(this.gyroQuaternion);
+>             this._tempQ.copy(this.camera.quaternion).slerp(targetQ, 0.25);
+>             this._tempEuler.setFromQuaternion(this._tempQ, 'YXZ');
+>             this._tempEuler.z = 0;
+>             this.camera.quaternion.setFromEuler(this._tempEuler);
+> 
+>             const dir = new THREE.Vector3();
+>             this.camera.getWorldDirection(dir);
+>             this.yaw = Math.atan2(-dir.x, -dir.z);
+>             this.pitch = Math.asin(THREE.MathUtils.clamp(dir.y, -0.99, 0.99));
+>           }
+1427,1429d1477
+<           if (Math.abs(this.joystickVector.y) > 0.05) forwardPower = -this.joystickVector.y;
+<           if (Math.abs(this.joystickVector.x) > 0.05) strafePower = this.joystickVector.x;
+< 
+1440a1489,1497
+>           
+>           if (this.joystickDelta.y !== 0 || this.joystickDelta.x !== 0) {
+>               forwardPower = -this.joystickDelta.y;
+>               strafePower = this.joystickDelta.x;
+>               const targetVelX = (fwdX * forwardPower + rightX * strafePower) * currentSpeed;
+>               const targetVelZ = (fwdZ * forwardPower + rightZ * strafePower) * currentSpeed;
+>               this.velocity.z += (targetVelZ - this.velocity.z) * Math.min(delta * 10, 1.0);
+>               this.velocity.x += (targetVelX - this.velocity.x) * Math.min(delta * 10, 1.0);
+>           }
+1442c1499,1500
+<           this.applyCollisionAndMove(delta);
+---
+>           this.camera.position.x += this.velocity.x * delta;
+>           this.camera.position.z += this.velocity.z * delta;
+1444,1446c1502,1520
+<           this._qYaw.setFromAxisAngle(this._axisY, this.yaw);
+<           this._qPitch.setFromAxisAngle(this._axisX, this.pitch);
+<           this.camera.quaternion.copy(this._qYaw).multiply(this._qPitch);
+---
+>           const maxBound = 45;
+>           this.camera.position.x = THREE.MathUtils.clamp(this.camera.position.x, -maxBound, maxBound);
+>           this.camera.position.z = THREE.MathUtils.clamp(this.camera.position.z, -maxBound, maxBound);
+> 
+>           if (this.isJumping || !this.lockHeight) {
+>             this.camera.position.y += this.jumpVelocity * delta;
+>             this.jumpVelocity -= this.gravity * delta;
+>             if (this.camera.position.y <= this.eyeHeight && this.lockHeight) {
+>                 this.camera.position.y = this.eyeHeight;
+>                 this.isJumping = false;
+>                 this.jumpVelocity = 0;
+>             }
+>           } else if (this.lockHeight) {
+>             this.camera.position.y = this.eyeHeight;
+>           }
+> 
+>           const qYaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
+>           const qPitch = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), this.pitch);
+>           this.camera.quaternion.copy(qYaw.multiply(qPitch));
+1451,1459c1525
+<           const fx = pos.x.toFixed(2);
+<           const fy = pos.y.toFixed(2);
+<           const fz = pos.z.toFixed(2);
+<           if (fx !== this._lastCoordX || fy !== this._lastCoordY || fz !== this._lastCoordZ) {
+<             this._lastCoordX = fx;
+<             this._lastCoordY = fy;
+<             this._lastCoordZ = fz;
+<             this.onCoordUpdate(fx, fy, fz);
+<           }
+---
+>           this.onCoordUpdate(pos.x.toFixed(2), pos.y.toFixed(2), pos.z.toFixed(2));
+1464,1479c1530,1538
+<     // === 3. VIRTUAL TOUCH JOYSTICK CONTROLLER (with Double-Tap Jump) ===
+<     class VirtualJoystick {
+<       constructor(container, knob, onChange, onJump) {
+<         this.container = container;
+<         this.knob = knob;
+<         this.onChange = onChange;
+<         this.onJump = onJump;
+<         this.active = false;
+<         this.touchId = null;
+<         this.maxRadius = 32;
+< 
+<         // Double-tap detection for jump
+<         this.lastTapTime = 0;
+<         this.doubleTapThreshold = 350; // ms
+< 
+<         this.initEvents();
+---
+>     // === 3. AR/VR MANAGER ===
+>     class ARVRManager {
+>       constructor(renderer, scene, camera, model) {
+>         this.renderer = renderer;
+>         this.scene = scene;
+>         this.camera = camera;
+>         this.model = model;
+>         this.arButtonElement = null;
+>         this.initWebXR();
+1482,1510c1541,1551
+<       initEvents() {
+<         const handleStart = (e) => {
+<           e.preventDefault();
+< 
+<           // Double-tap jump detection
+<           const now = Date.now();
+<           if (now - this.lastTapTime < this.doubleTapThreshold) {
+<             if (this.onJump) this.onJump();
+<             this.lastTapTime = 0;
+<           } else {
+<             this.lastTapTime = now;
+<           }
+< 
+<           if (this.active) return;
+<           const touch = e.touches ? e.touches[0] : e;
+<           this.touchId = touch.identifier !== undefined ? touch.identifier : 'mouse';
+<           this.active = true;
+<           this.updatePosition(touch.clientX, touch.clientY);
+<         };
+< 
+<         const handleMove = (e) => {
+<           if (!this.active) return;
+<           let touch = null;
+<           if (e.touches) {
+<             for (let i = 0; i < e.touches.length; i++) {
+<               if (e.touches[i].identifier === this.touchId) {
+<                 touch = e.touches[i];
+<                 break;
+<               }
+---
+>       initWebXR() {
+>         if ('xr' in navigator) {
+>           navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+>             if (supported) {
+>               this.arButtonElement = ARButton.createButton(this.renderer, {
+>                 requiredFeatures: ['hit-test'],
+>                 optionalFeatures: ['dom-overlay'],
+>                 domOverlay: { root: document.body }
+>               });
+>               this.arButtonElement.style.display = 'none';
+>               document.body.appendChild(this.arButtonElement);
+1512,1568c1553
+<           } else {
+<             touch = e;
+<           }
+<           if (touch) {
+<             e.preventDefault();
+<             this.updatePosition(touch.clientX, touch.clientY);
+<           }
+<         };
+< 
+<         const handleEnd = (e) => {
+<           if (!this.active) return;
+<           if (e.touches && this.touchId !== 'mouse') {
+<             let stillActive = false;
+<             for (let i = 0; i < e.touches.length; i++) {
+<               if (e.touches[i].identifier === this.touchId) {
+<                 stillActive = true;
+<                 break;
+<               }
+<             }
+<             if (stillActive) return;
+<           }
+<           this.active = false;
+<           this.touchId = null;
+<           this.resetKnob();
+<         };
+< 
+<         this.container.addEventListener('touchstart', handleStart, { passive: false });
+<         window.addEventListener('touchmove', handleMove, { passive: false });
+<         window.addEventListener('touchend', handleEnd, { passive: false });
+<         window.addEventListener('touchcancel', handleEnd, { passive: false });
+< 
+<         this.container.addEventListener('mousedown', handleStart);
+<         window.addEventListener('mousemove', handleMove);
+<         window.addEventListener('mouseup', handleEnd);
+<       }
+< 
+<       updatePosition(clientX, clientY) {
+<         const rect = this.container.getBoundingClientRect();
+<         const centerX = rect.left + rect.width / 2;
+<         const centerY = rect.top + rect.height / 2;
+< 
+<         let deltaX = clientX - centerX;
+<         let deltaY = clientY - centerY;
+<         const dist = Math.hypot(deltaX, deltaY);
+< 
+<         if (dist > this.maxRadius) {
+<           deltaX = (deltaX / dist) * this.maxRadius;
+<           deltaY = (deltaY / dist) * this.maxRadius;
+<         }
+< 
+<         this.knob.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
+< 
+<         const normX = deltaX / this.maxRadius;
+<         const normY = deltaY / this.maxRadius;
+< 
+<         if (this.onChange) {
+<           this.onChange(normX, normY);
+---
+>           });
+1572,1575c1557,1567
+<       resetKnob() {
+<         this.knob.style.transform = 'translate(-50%, -50%)';
+<         if (this.onChange) {
+<           this.onChange(0, 0);
+---
+>       setModel(model) { this.model = model; }
+> 
+>       launchAR() {
+>         const viewer = document.getElementById('ar-viewer');
+>         if (viewer) {
+>           viewer.activateAR();
+>         } else if (this.arButtonElement) {
+>           this.arButtonElement.click();
+>         } else {
+>           alert('📱 لتشغيل الواقع المعزز (AR) على جهازك:
+> يرجى فتح الموقع من متصفح يدعم AR.');
+1595d1586
+<     const modeStatusText = document.getElementById('mode-status-text');
+1607a1599,1614
+>     // Global double-tap to jump
+>     let lastScreenTap = 0;
+>     document.addEventListener('touchstart', (e) => {
+>         if (window.currentMode !== 'walk') return;
+>         if (e.target.closest('#joystick-zone') || e.target.closest('button') || e.target.closest('.glass-panel')) return;
+>         const now = Date.now();
+>         if (now - lastScreenTap < 400) {
+>             if (typeof controlManager !== 'undefined') controlManager.jump();
+>             lastScreenTap = 0;
+>         } else {
+>             lastScreenTap = now;
+>         }
+>     });
+> 
+>     const arvrManager = new ARVRManager(sceneManager.renderer, sceneManager.scene, sceneManager.camera, null);
+> 
+1612c1619
+<       './nury.glb',
+---
+>       './al_nuri_crypt.glb',
+1618c1625,1626
+<         controlManager.setColliders(sceneManager.colliders);
+---
+>         arvrManager.setModel(model);
+>         if (typeof controlManager !== 'undefined') controlManager.setColliders(sceneManager.colliders);
+1636a1645
+>       window.sunLocked = true;
+1641,1645c1650
+<         controlManager.setMode('walk');
+<         sceneManager.renderer.shadowMap.autoUpdate = false;
+<         sceneManager.renderer.shadowMap.needsUpdate = true;
+<         sceneManager.enterWalkPerformance();
+<         if (modeStatusText) modeStatusText.textContent = 'وضع المشي التفاعلي';
+---
+>         window.currentMode = 'walk'; controlManager.setMode('walk');
+1649a1655
+>       window.sunLocked = false;
+1654,1657c1660
+<       controlManager.setMode('orbit');
+<       sceneManager.renderer.shadowMap.autoUpdate = true;
+<       sceneManager.exitWalkPerformance();
+<       if (modeStatusText) modeStatusText.textContent = 'نظرة عامة (360°)';
+---
+>       window.currentMode = 'orbit'; controlManager.setMode('orbit');
+1660a1664
+>       window.sunLocked = true;
+1667,1671c1671
+<         controlManager.setMode('walk');
+<         sceneManager.renderer.shadowMap.autoUpdate = false;
+<         sceneManager.renderer.shadowMap.needsUpdate = true;
+<         sceneManager.enterWalkPerformance();
+<         if (modeStatusText) modeStatusText.textContent = 'وضع المشي التفاعلي';
+---
+>         window.currentMode = 'walk'; controlManager.setMode('walk');
+1675,1700d1674
+<     // Initialize Touch Joystick with Double-Tap Jump
+<     const joystickContainer = document.getElementById('joystick-container');
+<     const joystickKnob = document.getElementById('joystick-knob');
+<     if (joystickContainer && joystickKnob) {
+<       new VirtualJoystick(
+<         joystickContainer,
+<         joystickKnob,
+<         (x, y) => { controlManager.setJoystickInput(x, y); },
+<         () => { controlManager.triggerJump(); }
+<       );
+<     }
+< 
+<     // UI Hide / Show Toggle Buttons
+<     const btnToggleUI = document.getElementById('btn-toggle-ui');
+<     const btnRestoreUI = document.getElementById('btn-restore-ui');
+<     if (btnToggleUI) {
+<       btnToggleUI.addEventListener('click', () => {
+<         document.body.classList.add('ui-hidden');
+<       });
+<     }
+<     if (btnRestoreUI) {
+<       btnRestoreUI.addEventListener('click', () => {
+<         document.body.classList.remove('ui-hidden');
+<       });
+<     }
+< 
+1737,1740c1711
+<       controlManager.setMode('orbit');
+<       sceneManager.renderer.shadowMap.autoUpdate = true;
+<       sceneManager.exitWalkPerformance();
+<       if (modeStatusText) modeStatusText.textContent = 'نظرة عامة (360°)';
+---
+>       window.currentMode = 'orbit'; controlManager.setMode('orbit');
+1763,1766c1734,1754
+<     // Mobile Gyro VR Motion Tracking Button Handler
+<     const btnGyroHeader = document.getElementById('btn-gyro');
+<     const btnGyroTool = document.getElementById('btn-gyro-tool');
+<     const btnGyroWalk = document.getElementById('btn-gyro-walk');
+---
+>     document.getElementById('btn-ar').addEventListener('click', () => {
+>       // Gyroscope VR Mode instead of ARCore
+>       const elem = document.documentElement;
+>       if (elem.requestFullscreen) {
+>         elem.requestFullscreen();
+>       } else if (elem.webkitRequestFullscreen) { /* Safari */
+>         elem.webkitRequestFullscreen();
+>       } else if (elem.msRequestFullscreen) { /* IE11 */
+>         elem.msRequestFullscreen();
+>       }
+>       
+>       if (window.currentMode !== 'walk') {
+>         window.sunLocked = true;
+>         window.currentMode = 'walk';
+>         if (typeof controlManager !== 'undefined') controlManager.setMode('walk');
+>         const overlay = document.getElementById('walk-controls-overlay');
+>         const hero = document.getElementById('hero-start-container');
+>         if (overlay) overlay.classList.remove('hidden');
+>         if (hero) hero.classList.add('hidden');
+>       }
+>     });
+1768,1773c1756,1775
+<     async function handleGyroToggle() {
+<       const isActive = await controlManager.toggleGyro();
+<       [btnGyroHeader, btnGyroTool, btnGyroWalk].forEach((btn) => {
+<         if (btn) btn.classList.toggle('active', isActive);
+<       });
+<     }
+---
+>     const dpadDirs = ['up', 'down', 'left', 'right'];
+>     dpadDirs.forEach((dir) => {
+>       const btn = document.getElementById(`dpad-${dir}`);
+>       if (!btn) return;
+>       const start = (e) => {
+>         e.preventDefault();
+>         btn.classList.add('pressed');
+>         controlManager.setDpadDirection(dir, true);
+>       };
+>       const stop = (e) => {
+>         e.preventDefault();
+>         btn.classList.remove('pressed');
+>         controlManager.setDpadDirection(dir, false);
+>       };
+>       btn.addEventListener('touchstart', start, { passive: false });
+>       btn.addEventListener('touchend', stop, { passive: false });
+>       btn.addEventListener('mousedown', start);
+>       btn.addEventListener('mouseup', stop);
+>       btn.addEventListener('mouseleave', stop);
+>     });
+1775,1777c1777,1779
+<     if (btnGyroHeader) btnGyroHeader.addEventListener('click', handleGyroToggle);
+<     if (btnGyroTool) btnGyroTool.addEventListener('click', handleGyroToggle);
+<     if (btnGyroWalk) btnGyroWalk.addEventListener('click', handleGyroToggle);
+---
+>     
+>     const joystickContainer = document.getElementById('joystick-container');
+>     const joystickKnob = document.getElementById('joystick-knob');
+1778a1781,1800
+>     if (joystickContainer && joystickKnob) {
+>       new VirtualJoystick(
+>         joystickContainer,
+>         joystickKnob,
+>         (x, y) => { 
+>           if (window.controlManager) {
+>             window.controlManager.joystickInput.x = x;
+>             window.controlManager.joystickInput.y = y;
+>           } else if (typeof controlManager !== 'undefined') {
+>             controlManager.joystickInput.x = x;
+>             controlManager.joystickInput.y = y;
+>           }
+>         },
+>         () => { 
+>           if (window.controlManager) window.controlManager.jump();
+>           else if (typeof controlManager !== 'undefined') controlManager.jump();
+>         }
+>       );
+>     }
+> 

@@ -1,53 +1,72 @@
-const CACHE_NAME = 'nuuri-v3-clean';
+const CACHE_NAME = 'museum-vr-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './winged_bulls.html',
+  './tutunji_house_iwan.html',
+  './al_nuri_crypt.html',
+  './style.css',
   './logo.png',
-  './tutunjay.glb',
-  './manifest.json'
+  './winged_bulls.png',
+  './tutunji_house_iwan.png',
+  './al_nuri_crypt.png',
+  './DeviceOrientationControls.js',
+  './manifest.json',
+  // GLB Models - Be aware these are large and will take time to cache
+  './winged_bulls.glb',
+  './tutunji_house_iwan.glb',
+  './al_nuri_crypt.glb'
 ];
 
-// Install Event
+// Install Event - Precache critical assets
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[ServiceWorker] Pre-caching offline pages');
+      return cache.addAll(ASSETS_TO_CACHE);
+    }).then(() => self.skipWaiting())
+  );
 });
 
-// Activate Event - Wipe all caches completely
+// Activate Event - Clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          console.log('[ServiceWorker] Deleting cache:', cacheName);
-          return caches.delete(cacheName);
+          if (cacheName !== CACHE_NAME) {
+            console.log('[ServiceWorker] Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
         })
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// Fetch Event - Cache First with Dynamic Fallback for Offline Use
+// Fetch Event - Cache First Strategy
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
+      // 1. Return cached version if found
       if (cachedResponse) {
         return cachedResponse;
       }
 
+      // 2. Otherwise fetch from network
       return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type === 'opaque' && networkResponse.type !== 'basic') {
-          // If response is valid cross-origin or basic
+        // If response is valid, clone and cache it dynamically for future use
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
         }
-
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
-
         return networkResponse;
       }).catch(() => {
+        // 3. If offline and resource is not in cache (e.g. they typed a random URL), fallback to index
         if (event.request.headers.get('accept')?.includes('text/html')) {
           return caches.match('./index.html');
         }

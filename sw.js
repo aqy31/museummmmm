@@ -1,4 +1,4 @@
-const CACHE_NAME = 'museum-vr-v4';
+const CACHE_NAME = 'museum-vr-v5';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -49,7 +49,7 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
       // 1. Return cached version if found
       if (cachedResponse) {
         return cachedResponse;
@@ -57,13 +57,16 @@ self.addEventListener('fetch', (event) => {
 
       // 2. Otherwise fetch from network
       return fetch(event.request).then((networkResponse) => {
-        // If response is valid, clone and cache it dynamically for future use
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
+        // Cache EVERYTHING (basic, cors, and opaque) to ensure offline works for CDN files (like Three.js, Fonts, etc.)
+        if (!networkResponse || (networkResponse.status !== 200 && networkResponse.status !== 0)) {
+            return networkResponse;
         }
+        
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        });
+        
         return networkResponse;
       }).catch(() => {
         // 3. If offline and resource is not in cache (e.g. they typed a random URL), fallback to index

@@ -1,7 +1,7 @@
 {
-  "name": "NUURI 3D",
-  "short_name": "NUURI 3D",
-  "description": "منصة المشي والواقع المعزز (AR) - NUURI 3D",
+  "name": "المتحف الرقمي",
+  "short_name": "المتحف الرقمي",
+  "description": "المتحف الرقمي للجولات الافتراضية",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "any",

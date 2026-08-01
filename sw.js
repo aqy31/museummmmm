@@ -1,4 +1,4 @@
-const CACHE_NAME = 'museum-vr-v5';
+const CACHE_NAME = 'museum-vr-v6';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -11,11 +11,9 @@ const ASSETS_TO_CACHE = [
   './tutunji_house_iwan.png',
   './al_nuri_crypt.png',
   './DeviceOrientationControls.js',
-  './manifest.json',
-  // GLB Models - Be aware these are large and will take time to cache
-  './winged_bulls.glb',
-  './tutunji_house_iwan.glb',
-  './al_nuri_crypt.glb'
+  './manifest.json'
+  // Removed GLB files from precache so the UI caches instantly.
+  // GLB files will be dynamically cached when the user opens them.
 ];
 
 // Install Event - Precache critical assets
